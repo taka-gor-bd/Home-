@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Taka Gor BD</title> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Common CSS (আপনার অন্যান্য ফাইলের মতই) */
+        :root {
+            --primary-red: #FF0000;
+            --secondary-white: #FFFFFF;
+            --text-dark: #333;
+            --text-light: #eee;
+            --border-light: #ddd;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f6;
+            color: var(--text-dark);
+            overflow-x: hidden;
+            padding-bottom: 70px; /* For bottom navigation */
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* হেডার */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: var(--primary-red);
+            color: var(--secondary-white);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .header .notification-icon {
+            font-size: 24px;
+            color: var(--secondary-white);
+            text-decoration: none;
+            position: relative;
+        }
+
+        /* Main Content - No h2 "চ্যাট বক্স" here now */
+        .main-content {
+            padding: 20px;
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 150px); /* Adjusted for removed h2 */
+            position: relative;
+        }
+
+        /* Refined User Info Header */
+        .user-profile-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* To push status to the right */
+            background-color: #f0f8ff;
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .user-profile-header .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-profile-header .user-avatar {
+            font-size: 24px; /* Default icon size */
+            color: #555; /* Default icon color */
+            margin-right: 10px;
+        }
+
+        /* If you want to use an image for avatar: */
+        /* .user-profile-header .user-avatar img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            object-fit: cover;
+        } */
+
+        .user-profile-header .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-profile-header .user-details .name {
+            font-weight: bold;
+            color: var(--primary-red);
+            font-size: 1.1em;
+        }
+
+        .user-profile-header .user-details .status {
+            font-size: 0.85em;
+            color: #777;
+        }
+        
+        /* Premium badge styling for status */
+        .user-profile-header .user-details .status.premium-badge-text {
+            background-color: #28a745; /* Green */
+            color: white;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 0.7em;
+            font-weight: normal;
+            display: inline-block; /* To make padding work */
+            margin-left: 5px; /* Space from name */
+        }
+
+
+        .chat-container {
+            flex-grow: 1;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #fcfcfc;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column-reverse; /* Latest message at bottom */
+            height: 350px; /* Adjusted height for chat scroll */
+        }
+
+        .message-item {
+            display: flex;
+            margin-bottom: 10px;
+            align-items: flex-start;
+        }
+        .message-item.me {
+            justify-content: flex-end;
+        }
+        .message-item.other {
+            justify-content: flex-start;
+        }
+
+        .message-bubble {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 20px;
+            line-height: 1.4;
+            position: relative;
+        }
+
+        .message-item.me .message-bubble {
+            background-color: #DCF8C6; /* Light green for me */
+            color: #333;
+            border-bottom-right-radius: 5px; /* Tail effect */
+        }
+        .message-item.other .message-bubble {
+            background-color: #E6E6EA; /* Light grey for others */
+            color: #333;
+            border-bottom-left-radius: 5px; /* Tail effect */
+        }
+
+        .message-sender {
+            font-size: 0.8em;
+            color: #777;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .message-item.me .message-sender {
+            text-align: right;
+            margin-right: 15px; /* Adjust for tail */
+        }
+        .message-item.other .message-sender {
+            text-align: left;
+            margin-left: 15px; /* Adjust for tail */
+        }
+
+        .message-time {
+            font-size: 0.7em;
+            color: #999;
+            text-align: right;
+            margin-top: 5px;
+        }
+
+        /* Styling for the Telegram link INSIDE the chat bubble */
+        .message-bubble .telegram-link-in-chat {
+            display: block; /* Make it a block to take full width */
+            margin-top: 10px;
+            text-align: center;
+        }
+        .message-bubble .telegram-link-in-chat a {
+            color: #007bff; /* Blue link color */
+            text-decoration: none;
+            font-weight: bold;
+            border: 1px solid #007bff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: background-color 0.2s, color 0.2s;
+            display: inline-flex; /* Align icon and text */
+            align-items: center;
+            gap: 5px; /* Space between icon and text */
+        }
+        .message-bubble .telegram-link-in-chat a:hover {
+            background-color: #007bff;
+            color: white;
+        }
+        .message-bubble .telegram-link-in-chat a i {
+            font-size: 1.1em;
+        }
+
+        /* Hide the old telegram link box */
+        #telegramLinkSection {
+            display: none !important; 
+        }
+
+        .quick-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+            justify-content: center;
+            padding: 0 10px;
+        }
+
+        .quick-option-button {
+            background-color: #e0e0e0;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 15px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .quick-option-button:hover {
+            background-color: #d0d0d0;
+        }
+
+
+        .chat-input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .chat-input-group input {
+            flex-grow: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            font-size: 1em;
+        }
+
+        .chat-input-group button {
+            background-color: var(--primary-red);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .chat-input-group button:hover {
+            background-color: #c00;
+        }
+
+        /* নেভিগেশন বার (ফুটারে) */
+        .bottom-navigation {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--secondary-white);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 1000;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #777;
+            font-size: 12px;
+            transition: color 0.3s ease;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        .nav-item.active {
+            color: var(--primary-red);
+        }
+        .nav-item:hover {
+            color: var(--primary-red);
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                margin: 15px;
+                padding: 15px;
+                min-height: calc(100vh - 130px); /* Adjusted again */
+            }
+            .user-profile-header {
+                font-size: 0.8em;
+                padding: 8px 12px;
+            }
+            .chat-input-group input {
+                padding: 8px 12px;
+                font-size: 0.9em;
+            }
+            .chat-input-group button {
+                width: 40px;
+                height: 40px;
+                font-size: 1em;
+            }
+            .quick-option-button {
+                padding: 6px 12px;
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">Taka Gor BD</div>
+        <a href="notification.html" class="notification-icon">
+            <i class="fas fa-bell"></i>
+        </a>
+    </div>
+
+    <div class="main-content">
+        <div class="user-profile-header">
+            <div class="user-info">
+                <span class="user-avatar"><i class="fas fa-user-circle"></i></span> <div class="user-details">
+                    <span id="userNameDisplay" class="name">লোডিং...</span>
+                    <span id="userStatusDisplay" class="status">লোডিং...</span>
+                </div>
+            </div>
+            <div></div> 
+        </div>
+
+        <div id="chatMessages" class="chat-container">
+            <p style="text-align: center; color: #888; margin-top: 20px;">স্বাগতম! যেকোনো প্রশ্ন জিজ্ঞাসা করুন।</p>
+        </div>
+
+        <div id="telegramLinkSection" class="telegram-link-box" style="display: none;"></div> 
+
+        <div class="quick-options" id="quickOptions">
+            <button class="quick-option-button" data-question="উইথড্র প্রবলেম">উইথড্র প্রবলেম</button>
+            <button class="quick-option-button" data-question="ডিপোজিট প্রবলেম">ডিপোজিট প্রবলেম</button>
+            <button class="quick-option-button" data-question="লটারি প্রবলেম">লটারি প্রবলেম</button>
+            <button class="quick-option-button" data-question="অন্যান্য সমস্যা">অন্যান্য সমস্যা</button>
+            <button class="quick-option-button" data-question="হ্যালো AI">হ্যালো AI</button>
+            <button class="quick-option-button" data-question="সালাম">সালাম</button>
+        </div>
+
+        <div class="chat-input-group">
+            <input type="text" id="messageInput" placeholder="আপনার প্রশ্ন জিজ্ঞাসা করুন...">
+            <button id="sendMessageBtn"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <div class="bottom-navigation">
+        <a href="dashboard.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>হোম</span>
+        </a>
+        <a href="premium_plans.html" class="nav-item">
+            <i class="fas fa-crown"></i>
+            <span>প্রিমিয়াম</span>
+        </a>
+        <a href="wallet.html" class="nav-item">
+            <i class="fas fa-wallet"></i>
+            <span>ওয়ালেট</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <i class="fas fa-user-circle"></i>
+            <span>প্রোফাইল</span>
+        </a>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+        // Firebase Configuration (আপনার সঠিক Firebase কনফিগারেশন দিন)
+        const firebaseConfig = {
+          apiKey: "AIzaSyA0nwj-qooOderNiLvmILB-gIPouy2HG4c",
+          authDomain: "takagorbd.firebaseapp.com",
+          databaseURL: "https://takagorbd-default-rtdb.asia-southeast1.firebasedatabase.app",
+          projectId: "takagorbd",
+          storageBucket: "takagorbd.firebasestorage.app",
+          messagingSenderId: "531548262665",
+          appId: "1:531548262665:web:85fb34ea635dae7ddc43d8",
+          measurementId: "G-TZB0NHKYGY"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        // DOM Elements
+        const chatMessagesEl = document.getElementById('chatMessages');
+        const messageInput = document.getElementById('messageInput');
+        const sendMessageBtn = document.getElementById('sendMessageBtn');
+        const userNameDisplayEl = document.getElementById('userNameDisplay');
+        const userStatusDisplayEl = document.getElementById('userStatusDisplay');
+        // const telegramLinkSection = document.getElementById('telegramLinkSection'); // No longer needed for display toggle
+        const quickOptionsContainer = document.getElementById('quickOptions');
+
+        let currentUser = null;
+        let userConversationCount = 0; // To track user interactions for fun responses/link trigger
+        const TELEGRAM_LINK_THRESHOLD = 3; 
+        const TELEGRAM_CHANNEL_LINK = "https://t.me/your_telegram_channel_link"; // <<-- UPDATE THIS LINK!
+
+        // Text-to-Speech (TTS) setup
+        const synth = window.speechSynthesis;
+        function speak(text) {
+            if (!synth) {
+                console.warn("SpeechSynthesis API not supported in this browser.");
+                return;
+            }
+            if (synth.speaking) {
+                synth.cancel();
+            }
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'bn-BD';
+            synth.speak(utterance);
+        }
+
+        // Handle initial load and user status
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                try {
+                    const userRef = ref(database, `users/${user.uid}`);
+                    const snapshot = await get(userRef);
+                    let userName = user.displayName || user.email || 'প্রিয় ইউজার';
+                    let userStatus = 'সাধারণ ইউজার';
+                    if (snapshot.exists()) {
+                        const userData = snapshot.val();
+                        if (userData.name) userName = userData.name;
+                        if (userData.premiumEndDate && userData.premiumEndDate > Date.now()) {
+                            userStatus = 'প্রিমিয়াম ইউজার';
+                        }
+                    } else {
+                        console.warn("User data not found in database for UID:", user.uid);
+                    }
+                    userNameDisplayEl.textContent = userName;
+                    userStatusDisplayEl.textContent = userStatus;
+                    if (userStatus === 'প্রিমিয়াম ইউজার') {
+                        userStatusDisplayEl.classList.add('premium-badge-text');
+                    } else {
+                        userStatusDisplayEl.classList.remove('premium-badge-text');
+                    }
+                } catch (error) {
+                    console.error("ইউজার ডেটা লোড করতে সমস্যা:", error);
+                    userNameDisplayEl.textContent = user.displayName || user.email || 'প্রিয় ইউজার';
+                    userStatusDisplayEl.textContent = 'সাধারণ ইউজার';
+                } finally {
+                    const initialGreetingP = chatMessagesEl.querySelector('p');
+                    if (initialGreetingP && initialGreetingP.textContent.includes('স্বাগতম')) {
+                        initialGreetingP.remove();
+                    }
+                    displayBotMessage(`সালাম, ${userNameDisplayEl.textContent.split(' ')[0]}! আমি আপনার যেকোনো প্রশ্নের উত্তর দিতে প্রস্তুত।`);
+                }
+            } else {
+                window.location.href = 'register_login.html';
+            }
+        });
+
+        // Function to display a single message (user or bot)
+        function displayMessage(message) {
+            const messageItem = document.createElement('div');
+            messageItem.classList.add('message-item');
+            
+            const isMe = message.userId === currentUser?.uid;
+            messageItem.classList.add(isMe ? 'me' : 'other');
+
+            const messageBubble = document.createElement('div');
+            messageBubble.classList.add('message-bubble');
+
+            const senderEl = document.createElement('div');
+            senderEl.classList.add('message-sender');
+            senderEl.textContent = message.userId === 'bot' ? 'AI সহকারি' : (message.userName || 'আপনি');
+
+            const textEl = document.createElement('p');
+            // If the message contains a telegram link specifically formatted, render HTML
+            if (message.text.includes("{{TELEGRAM_LINK}}")) {
+                const parts = message.text.split("{{TELEGRAM_LINK}}");
+                textEl.innerHTML = parts[0];
+                const linkDiv = document.createElement('div');
+                linkDiv.classList.add('telegram-link-in-chat');
+                linkDiv.innerHTML = `<a href="${TELEGRAM_CHANNEL_LINK}" target="_blank">
+                                        <i class="fab fa-telegram-plane"></i> টেলিগ্রাম গ্রুপে জয়েন করুন
+                                     </a>`;
+                messageBubble.appendChild(senderEl); // Sender name
+                messageBubble.appendChild(textEl); // First part of text
+                messageBubble.appendChild(linkDiv); // The link button
+                if (parts[1]) { // If there's text after the link placeholder
+                    const secondTextPart = document.createElement('p');
+                    secondTextPart.textContent = parts[1];
+                    messageBubble.appendChild(secondTextPart);
+                }
+            } else {
+                textEl.textContent = message.text;
+                messageBubble.appendChild(senderEl);
+                messageBubble.appendChild(textEl);
+            }
+
+            const timeEl = document.createElement('div');
+            timeEl.classList.add('message-time');
+            const date = new Date(message.timestamp);
+            timeEl.textContent = date.toLocaleTimeString('bn-BD', { hour: '2-digit', minute: '2-digit' });
+            messageBubble.appendChild(timeEl); // Time always at the end
+
+            messageItem.appendChild(messageBubble);
+            chatMessagesEl.prepend(messageItem);
+            chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+        }
+
+        function displayBotMessage(text, hasTelegramLink = false) {
+            const message = {
+                userId: 'bot',
+                userName: 'AI সহকারি',
+                text: text,
+                timestamp: Date.now(),
+                // telegramLink: hasTelegramLink // Not needed as it's embedded in text
+            };
+            displayMessage(message);
+            speak(text.replace("{{TELEGRAM_LINK}}", "টেলিগ্রাম গ্রুপে জয়েন করুন")); // Speak only text, not the placeholder
+        }
+
+        // Enhanced AI/Bot logic with human-like touches and problem-solving focus
+        function getBotResponse(userMessage) {
+            const lowerCaseMessage = userMessage.toLowerCase();
+            const userName = userNameDisplayEl.textContent.split(' ')[0] || 'প্রিয় ইউজার';
+            
+            // General greetings and fun responses
+            if (lowerCaseMessage.includes('সালাম') || lowerCaseMessage.includes('আসসালামু আলাইকুম')) {
+                return `ওয়ালাইকুম আসসালাম, ${userName}! কেমন আছেন? আমি আপনার জন্য কী করতে পারি?`;
+            } else if (lowerCaseMessage.includes('হ্যালো') || lowerCaseMessage.includes('hi') || lowerCaseMessage.includes('hey ai')) {
+                const greetings = [`হ্যালো ${userName}! আমি এখানে আছি আপনাকে সাহায্য করার জন্য।`, `হাই, ${userName}! কেমন চলছে সব?`];
+                return greetings[Math.floor(Math.random() * greetings.length)];
+            } else if (lowerCaseMessage.includes('কেমন আছো')) {
+                return `আমি ভালো আছি, ${userName}! একটি ডিজিটাল সহকারী হিসেবে আমার কোনো অনুভূতি নেই, তবে আমি আপনার সাথে কথা বলতে পেরে আনন্দিত। আপনি কেমন আছেন?`;
+            } else if (lowerCaseMessage.includes('মজা করি') || lowerCaseMessage.includes('fun')) {
+                return `হাহা! আপনি আমাকে নিয়ে মজা করতে চান? বলুন, কী নিয়ে মজা করবেন? আমি আপনার সাথে যোগ দিতে প্রস্তুত! 😉`;
+            } else if (lowerCaseMessage.includes('ধন্যবাদ') || lowerCaseMessage.includes('thanks')) {
+                return `আপনাকে স্বাগতম, ${userName}! সাহায্য করতে পেরে খুশি হলাম। আর কিছু জানতে চাইলে দ্বিধা করবেন না।`;
+            }
+
+            // Specific Problem-focused responses (now include {{TELEGRAM_LINK}} placeholder)
+            if (lowerCaseMessage.includes('উইথড্র প্রবলেম') || lowerCaseMessage.includes('উত্তোলন সমস্যা') || lowerCaseMessage.includes('টাকা উঠাতে পারছি না')) {
+                return `আমি আপনার উইথড্র প্রবলেমটি বুঝতে পারছি, ${userName}! দুঃখিত, এই মুহূর্তে উত্তোলন সার্ভিসটি কিছু জটিলতার কারণে সাময়িকভাবে বন্ধ আছে। আমাদের অ্যাডমিনরা দ্রুত এটি সমাধান করার চেষ্টা করছেন। বিস্তারিত জানতে অনুগ্রহ করে {{TELEGRAM_LINK}} ।`;
+            } else if (lowerCaseMessage.includes('ডিপোজিট প্রবলেম') || lowerCaseMessage.includes('টাকা জমা দিতে পারছি না') || lowerCaseMessage.includes('রিচার্জ সমস্যা')) {
+                return `ডিপোজিট সমস্যা নিয়ে চিন্তিত? ${userName}, আপনার সমস্যাটি আমাদের টেকনিক্যাল টিম দেখছে। অনুগ্রহ করে পেমেন্ট মেথড চেক করুন এবং নিশ্চিত করুন যে আপনার ইন্টারনেট সংযোগ ঠিক আছে। যদি সমস্যা চলতে থাকে, তাহলে {{TELEGRAM_LINK}} স্ক্রিনশট সহ বিস্তারিত জানান।`;
+            } else if (lowerCaseMessage.includes('লটারি প্রবলেম') || lowerCaseMessage.includes('লটারি কাজ করছে না')) {
+                return `লটারি নিয়ে কোনো সমস্যা হয়েছে, ${userName}? লটারির ফলাফল বা নিয়ম সংক্রান্ত বিষয়ে জানতে আপনি লটারি পেজ চেক করতে পারেন। যদি কোনো টেকনিক্যাল সমস্যা হয়, তবে {{TELEGRAM_LINK}}।`;
+            } else if (lowerCaseMessage.includes('অন্যান্য সমস্যা')) {
+                return `আপনি অন্য কোনো সমস্যার সম্মুখীন হয়েছেন, ${userName}? অনুগ্রহ করে আপনার সমস্যাটি আরও বিস্তারিতভাবে বলুন। যদি প্রয়োজন হয়, আপনি {{TELEGRAM_LINK}} সরাসরি অ্যাডমিনদের সাথে কথা বলতে পারবেন।`;
+            }
+            // Add more specific answers based on common user queries
+            else if (lowerCaseMessage.includes('কিভাবে কাজ করে')) {
+                return `${userName}, আমাদের অ্যাপে আপনি ছোট ছোট কাজ যেমন বিজ্ঞাপন দেখা, সার্ভে পূরণ করা, অ্যাপ ডাউনলোড করা ইত্যাদি করে টাকা ইনকাম করতে পারবেন। বিস্তারিত জানতে হোমের "কাজসমূহ" বিভাগটি দেখতে পারেন।`;
+            }
+            else if (lowerCaseMessage.includes('একাউন্ট খুলতে চাই')) {
+                return `${userName}, একাউন্ট খোলার জন্য লগইন/রেজিস্টার পেজে গিয়ে আপনার ইমেইল এবং পাসওয়ার্ড ব্যবহার করে রেজিস্টার করতে পারেন।`;
+            }
+
+            // General fallback and engaging responses
+            userConversationCount++;
+            if (userConversationCount === 2) {
+                return `আমি আপনার প্রশ্নটি বুঝতে পারছি না, ${userName}। আপনি কি অন্যভাবে জিজ্ঞাসা করবেন? আমি একটি ডিজিটাল সহকারী, তাই কিছু ক্ষেত্রে আমার সীমাবদ্ধতা থাকতে পারে।`;
+            } else if (userConversationCount >= TELEGRAM_LINK_THRESHOLD) { // Trigger general telegram link after a few messages
+                return `আমি যদি আপনার প্রশ্নের সঠিক উত্তর দিতে না পারি, ${userName}, তাহলে সরাসরি অ্যাডমিনদের সাথে কথা বলার জন্য {{TELEGRAM_LINK}} ।`;
+            }
+            else {
+                const genericResponses = [
+                    `আমি আপনার প্রশ্নটি পরিষ্কারভাবে বুঝতে পারছি না, ${userName}। দয়া করে আরও বিস্তারিত বলুন।`,
+                    `আপনার প্রশ্নটি আরও সহজভাবে ব্যাখ্যা করতে পারবেন? আমি তাহলে সহজে উত্তর দিতে পারব।`,
+                    `দুঃখিত, ${userName}, আমি ঠিক ধরতে পারছি না। অন্য কোনোভাবে সাহায্য করতে পারি?`
+                ];
+                return genericResponses[Math.floor(Math.random() * genericResponses.length)];
+            }
+        }
+
+        // Send message functionality
+        sendMessageBtn.addEventListener('click', async () => {
+            if (!currentUser) {
+                alert('মেসেজ পাঠাতে লগইন করুন।');
+                window.location.href = 'register_login.html';
+                return;
+            }
+            const messageText = messageInput.value.trim();
+            if (messageText === '') return;
+
+            displayMessage({
+                userId: currentUser.uid,
+                userName: currentUser.displayName || currentUser.email || 'আপনি',
+                text: messageText,
+                timestamp: Date.now()
+            });
+            messageInput.value = '';
+
+            setTimeout(() => {
+                const botResponse = getBotResponse(messageText);
+                displayBotMessage(botResponse);
+            }, 800);
+        });
+
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessageBtn.click();
+            }
+        });
+
+        quickOptionsContainer.addEventListener('click', (event) => {
+            if (event.target.classList.contains('quick-option-button')) {
+                const question = event.target.dataset.question;
+                messageInput.value = question;
+                sendMessageBtn.click();
+            }
+        });
+    </script>
+</body>
+</html>

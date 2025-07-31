@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Taka Gor BD - আপনার আয়ের সহজ পথ</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* CSS Variables for consistent branding */
+        :root {
+            --primary-red: #FF0000;
+            --secondary-white: #FFFFFF;
+            --text-dark: #333;
+            --text-light: #eee;
+            --background-gradient: linear-gradient(135deg, #f4f7f6, #e0e5ec);
+            --box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: var(--background-gradient);
+            color: var(--text-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden; /* Prevent scroll on initial load for full page hero */
+            text-align: center;
+        }
+
+        .container {
+            background-color: var(--secondary-white);
+            border-radius: 15px;
+            box-shadow: var(--box-shadow);
+            padding: 40px 30px;
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+            animation: fadeInScale 0.8s ease-out forwards; /* Animation on load */
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .logo-section {
+            margin-bottom: 25px;
+        }
+
+        .logo-icon {
+            font-size: 60px; /* Larger icon */
+            color: var(--primary-red);
+            margin-bottom: 10px;
+            animation: bounceIn 1s ease-out forwards;
+        }
+
+        @keyframes bounceIn {
+            0%, 20%, 40%, 60%, 80%, 100% {
+                transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+            }
+            0% {
+                opacity: 0;
+                transform: scale3d(0.3, 0.3, 0.3);
+            }
+            20% {
+                transform: scale3d(1.1, 1.1, 1.1);
+            }
+            40% {
+                transform: scale3d(0.9, 0.9, 0.9);
+            }
+            60% {
+                opacity: 1;
+                transform: scale3d(1.03, 1.03, 1.03);
+            }
+            80% {
+                transform: scale3d(0.97, 0.97, 0.97);
+            }
+            100% {
+                opacity: 1;
+                transform: scale3d(1, 1, 1);
+            }
+        }
+
+        .app-title {
+            font-size: 2.5em; /* Larger title */
+            font-weight: bold;
+            color: var(--primary-red);
+            margin-bottom: 5px;
+            letter-spacing: -1px;
+        }
+
+        .tagline {
+            font-size: 1.1em;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .join-button {
+            background-color: var(--primary-red);
+            color: var(--secondary-white);
+            border: none;
+            border-radius: 30px; /* Pill shape */
+            padding: 15px 35px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none; /* For anchor tag */
+            display: inline-block; /* For anchor tag to take padding */
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 10px rgba(255, 0, 0, 0.3);
+            display: flex; /* To center icon and text */
+            align-items: center;
+            justify-content: center;
+            gap: 10px; /* Space between icon and text */
+            margin: 0 auto; /* Center the button */
+        }
+
+        .join-button i {
+            font-size: 1.3em;
+        }
+
+        .join-button:hover {
+            background-color: #c00;
+            transform: translateY(-3px); /* Lift effect on hover */
+            box-shadow: 0 6px 15px rgba(255, 0, 0, 0.4);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+                max-width: 95%;
+            }
+            .logo-icon {
+                font-size: 50px;
+            }
+            .app-title {
+                font-size: 2em;
+            }
+            .tagline {
+                font-size: 1em;
+                margin-bottom: 25px;
+            }
+            .join-button {
+                padding: 12px 25px;
+                font-size: 1.1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-section">
+            <i class="fas fa-sack-dollar logo-icon"></i> <h1 class="app-title">Taka Gor BD</h1>
+            <p class="tagline">আপনার স্বপ্ন পূরণের পথে আমরা আপনার পাশে!</p>
+            <p class="tagline">সহজ উপার্জনের সুযোগ, সুরক্ষিত লেনদেন, এবং ২৪/৭ সাপোর্ট। আজই জয়েন করুন!</p>
+        </div>
+        <a href="register_login.html" class="join-button">
+            <i class="fas fa-sign-in-alt"></i> জয়েন করুন আমাদের সাথে
+        </a>
+    </div>
+</body>
+</html>

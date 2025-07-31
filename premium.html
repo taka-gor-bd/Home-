@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>প্রিমিয়াম কাজ - Taka Gor BD</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* আপনার প্রধান CSS কোড এখানে পেস্ট করুন, অথবা একটি ফাইল থেকে লিংক করুন */
+        :root {
+            --primary-red: #FF0000;
+            --secondary-white: #FFFFFF;
+            --text-dark: #333;
+            --text-light: #eee;
+            --border-light: #ddd;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f6;
+            color: var(--text-dark);
+            overflow-x: hidden;
+            padding-bottom: 70px; /* নেভিগেশন বারের জন্য নিচ থেকে প্যাডিং */
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* হেডার */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: var(--primary-red);
+            color: var(--secondary-white);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .header .notification-icon {
+            font-size: 24px;
+            color: var(--secondary-white);
+            text-decoration: none;
+            position: relative;
+        }
+
+        /* এই পেজের জন্য নির্দিষ্ট CSS */
+        .premium-tasks-container {
+            padding: 20px;
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .premium-tasks-container h2 {
+            text-align: center;
+            color: var(--primary-red);
+            margin-bottom: 25px;
+            font-size: 24px;
+        }
+
+        .task-card {
+            background-color: #f9f9f9;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .task-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .task-card h3 {
+            margin-top: 0;
+            color: #333;
+            font-size: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .task-card .task-reward {
+            font-weight: bold;
+            color: #008000; /* সবুজ */
+            font-size: 18px;
+        }
+
+        .task-card p {
+            font-size: 15px;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .task-card .task-link {
+            display: block;
+            margin-bottom: 10px;
+            color: var(--primary-red);
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 15px;
+        }
+        .task-card .task-link:hover {
+            text-decoration: underline;
+        }
+
+        .task-card .code-input-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        .task-card .code-input-group input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .task-card .claim-button {
+            background-color: var(--primary-red);
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        .task-card .claim-button:hover {
+            background-color: #c00;
+        }
+
+        .task-card .claim-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            color: #666;
+        }
+
+        .task-card .task-status-message {
+            text-align: center;
+            font-size: 14px;
+            color: #555;
+            margin-top: 10px;
+        }
+
+        /* নেভিগেশন বার (ফুটারে) */
+        .bottom-navigation {
+            position: fixed; /* পার্মানেন্টলি স্ক্রিনে থাকবে */
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--secondary-white);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 1000;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #777;
+            font-size: 12px;
+            transition: color 0.3s ease;
+            flex: 1; /* প্রতিটি আইটেম সমান জায়গা নেবে */
+            min-width: 0; /* ফ্লেক্স আইটেম অতিরিক্ত চওড়া হওয়া এড়াতে */
+        }
+
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        .nav-item.active {
+            color: var(--primary-red);
+        }
+        .nav-item:hover {
+            color: var(--primary-red);
+        }
+
+        /* ছোট স্ক্রিনের জন্য */
+        @media (max-width: 480px) {
+            .premium-tasks-container {
+                margin: 15px;
+                padding: 15px;
+            }
+            .premium-tasks-container h2 {
+                font-size: 20px;
+                margin-bottom: 20px;
+            }
+            .task-card h3 {
+                font-size: 18px;
+            }
+            .task-card .task-reward {
+                font-size: 16px;
+            }
+            .task-card p {
+                font-size: 14px;
+            }
+            .task-card .claim-button {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+            .task-card .code-input-group input {
+                padding: 8px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">Taka Gor BD</div>
+        <a href="notification.html" class="notification-icon">
+            <i class="fas fa-bell"></i>
+        </a>
+    </div>
+
+    <div class="premium-tasks-container">
+        <h2>প্রিমিয়াম কাজসমূহ</h2>
+        <div id="tasksList">
+            <p id="loadingMessage" style="text-align: center; color: #888;">কাজ লোড হচ্ছে...</p>
+        </div>
+        <p id="noTasksMessage" style="text-align: center; color: #888; display: none;">বর্তমানে কোন প্রিমিয়াম কাজ উপলব্ধ নেই অথবা আপনি প্রিমিয়াম মেম্বার নন।</p>
+    </div>
+
+    <div class="bottom-navigation">
+        <a href="dashboard.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>হোম</span>
+        </a>
+        <a href="premium_tasks.html" class="nav-item active">
+            <i class="fas fa-crown"></i>
+            <span>প্রিমিয়াম</span>
+        </a>
+        <a href="wallet.html" class="nav-item">
+            <i class="fas fa-wallet"></i>
+            <span>ওয়ালেট</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <i class="fas fa-user-circle"></i>
+            <span>প্রোফাইল</span>
+        </a>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyA0nwj-qooOderNiLvmILB-gIPouy2HG4c",
+          authDomain: "takagorbd.firebaseapp.com",
+          databaseURL: "https://takagorbd-default-rtdb.asia-southeast1.firebasedatabase.app",
+          projectId: "takagorbd",
+          storageBucket: "takagorbd.firebasestorage.app",
+          messagingSenderId: "531548262665",
+          appId: "1:531548262665:web:85fb34ea635dae7ddc43d8",
+          measurementId: "G-TZB0NHKYGY"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        const tasksListElement = document.getElementById('tasksList');
+        const noTasksMessage = document.getElementById('noTasksMessage');
+        const loadingMessage = document.getElementById('loadingMessage');
+        let currentUser = null;
+
+        // প্রিমিয়াম কাজগুলো এবং তাদের কোড ও ভিডিও লিংক
+        const premiumTasksData = {
+            "task_video_1": {
+                "title": "বিজ্ঞাপন ভিডিও দেখুন (১০০)",
+                "description": "এই ভিডিওটি সম্পূর্ণ দেখুন এবং ভিডিওতে দেওয়া গোপন কোডটি সাবমিট করুন।",
+                "reward": 15.00,
+                "videoLink": "https://www.youtube.com/watch?v=your_video_id_1", // আপনার ভিডিওর YouTube লিংক
+                "correctCode": "100" // এই ভিডিওর জন্য সঠিক কোড
+            },
+            "task_video_2": {
+                "title": "শিক্ষামূলক ভিডিও দেখুন (২০০)",
+                "description": "এই ভিডিওটি মনোযোগ দিয়ে দেখুন এবং ভিডিওতে পাওয়া কোডটি সাবমিট করুন।",
+                "reward": 20.00,
+                "videoLink": "https://www.youtube.com/watch?v=your_video_id_2", // আপনার ভিডিওর YouTube লিংক
+                "correctCode": "200" // এই ভিডিওর জন্য সঠিক কোড
+            },
+            "task_video_3": {
+                "title": "বিশেষ টিপস ভিডিও দেখুন (৪০০)",
+                "description": "এই বিশেষ টিপস ভিডিওটি দেখে প্রদত্ত কোডটি পূরণ করুন।",
+                "reward": 25.00,
+                "videoLink": "https://www.youtube.com/watch?v=your_video_id_3", // আপনার ভিডিওর YouTube লিংক
+                "correctCode": "400" // এই ভিডিওর জন্য সঠিক কোড
+            }
+        };
+
+        // প্রিমিয়াম কাজ লোড করার ফাংশন
+        async function loadPremiumTasks() {
+            loadingMessage.style.display = 'block';
+            tasksListElement.innerHTML = '';
+            noTasksMessage.style.display = 'none';
+
+            if (!currentUser) {
+                console.log("ইউজার লগইন করা নেই।");
+                loadingMessage.style.display = 'none';
+                noTasksMessage.style.display = 'block';
+                noTasksMessage.textContent = 'এই ফিচারটি ব্যবহার করতে লগইন করুন।';
+                return;
+            }
+
+            const userId = currentUser.uid;
+            const userRef = ref(database, `users/${userId}`);
+
+            try {
+                const userSnapshot = await get(userRef);
+                const userData = userSnapshot.val();
+
+                // প্রিমিয়াম মেম্বার চেক
+                if (!userData || !userData.premiumPlan || userData.premiumEndDate <= Date.now()) {
+                    console.log("ইউজার প্রিমিয়াম মেম্বার নয় অথবা মেয়াদ শেষ।");
+                    loadingMessage.style.display = 'none';
+                    noTasksMessage.style.display = 'block';
+                    noTasksMessage.textContent = 'এই ফিচারটি শুধুমাত্র প্রিমিয়াম ব্যবহারকারীদের জন্য অথবা আপনার প্রিমিয়াম মেয়াদ শেষ হয়েছে।';
+                    return;
+                }
+
+                let tasksFound = false;
+                const userLastClaimTimes = userData.lastClaimedTaskTimes || {}; // ইউজারের শেষ ক্লেমের সময়
+
+                for (const taskId in premiumTasksData) {
+                    const task = premiumTasksData[taskId];
+                    const lastClaimTime = userLastClaimTimes[taskId] || 0;
+                    const now = Date.now();
+                    const twentyFourHours = 24 * 60 * 60 * 1000;
+
+                    const canClaim = (now - lastClaimTime) >= twentyFourHours;
+
+                    const taskCard = document.createElement('div');
+                    taskCard.classList.add('task-card');
+                    taskCard.innerHTML = `
+                        <h3>${task.title} <span class="task-reward">৳ ${parseFloat(task.reward).toFixed(2)}</span></h3>
+                        <p>${task.description}</p>
+                        <a href="${task.videoLink}" target="_blank" class="task-link"><i class="fab fa-youtube"></i> ভিডিওটি দেখুন</a>
+                        <div class="code-input-group">
+                            <input type="text" id="code-input-${taskId}" placeholder="ভিডিও কোড দিন" ${!canClaim ? 'disabled' : ''}>
+                        </div>
+                        <button class="claim-button" data-task-id="${taskId}" data-reward="${task.reward}" data-correct-code="${task.correctCode}" ${!canClaim ? 'disabled' : ''}>
+                            ${canClaim ? 'ক্লেম করুন' : '২৪ ঘণ্টা পর ক্লেম করুন'}
+                        </button>
+                        <p class="task-status-message" id="status-message-${taskId}"></p>
+                    `;
+                    tasksListElement.appendChild(taskCard);
+                    tasksFound = true;
+
+                    // যদি ক্লেম করা না যায়, বাকি সময় দেখান
+                    if (!canClaim) {
+                        const remainingTime = twentyFourHours - (now - lastClaimTime);
+                        const hours = Math.floor(remainingTime / (1000 * 60 * 60));
+                        const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+                        document.getElementById(`status-message-${taskId}`).textContent = `আর ${hours}ঘ ${minutes}মি ${seconds}সে বাকি`;
+                        
+                        // কাউন্টডাউন আপডেট করার জন্য সেট ইন্টারভাল
+                        const countdownInterval = setInterval(() => {
+                            const updatedRemainingTime = twentyFourHours - (Date.now() - lastClaimTime);
+                            if (updatedRemainingTime <= 0) {
+                                clearInterval(countdownInterval);
+                                const button = document.querySelector(`.claim-button[data-task-id="${taskId}"]`);
+                                const input = document.getElementById(`code-input-${taskId}`);
+                                if (button) {
+                                    button.disabled = false;
+                                    button.textContent = 'ক্লেম করুন';
+                                }
+                                if (input) input.disabled = false;
+                                document.getElementById(`status-message-${taskId}`).textContent = '';
+                            } else {
+                                const h = Math.floor(updatedRemainingTime / (1000 * 60 * 60));
+                                const m = Math.floor((updatedRemainingTime % (1000 * 60 * 60)) / (1000 * 60));
+                                const s = Math.floor((updatedRemainingTime % (1000 * 60)) / 1000);
+                                document.getElementById(`status-message-${taskId}`).textContent = `আর ${h}ঘ ${m}মি ${s}সে বাকি`;
+                            }
+                        }, 1000);
+                    }
+                }
+
+                if (!tasksFound) {
+                    noTasksMessage.style.display = 'block';
+                    noTasksMessage.textContent = 'বর্তমানে কোন প্রিমিয়াম কাজ উপলব্ধ নেই।';
+                }
+
+                loadingMessage.style.display = 'none';
+
+                // ক্লেম বাটনে ইভেন্ট লিসেনার যোগ করুন
+                document.querySelectorAll('.claim-button').forEach(button => {
+                    button.addEventListener('click', claimTask);
+                });
+
+            } catch (error) {
+                console.error("প্রিমিয়াম কাজ লোড করতে সমস্যা:", error);
+                loadingMessage.style.display = 'none';
+                noTasksMessage.style.display = 'block';
+                noTasksMessage.textContent = 'কাজ লোড করতে সমস্যা হয়েছে: ' + error.message;
+            }
+        }
+
+        // কাজ ক্লেম করার ফাংশন
+        async function claimTask(event) {
+            if (!currentUser) {
+                alert('কাজ ক্লেম করতে লগইন করুন।');
+                return;
+            }
+
+            const button = event.target;
+            const taskId = button.dataset.taskId;
+            const reward = parseFloat(button.dataset.reward);
+            const correctCode = button.dataset.correctCode;
+            const userId = currentUser.uid;
+            
+            const codeInput = document.getElementById(`code-input-${taskId}`);
+            const submittedCode = codeInput ? codeInput.value.trim() : '';
+
+            button.disabled = true; // বাটনটি অক্ষম করুন যাতে বারবার ক্লিক না হয়
+            button.textContent = 'চেক করা হচ্ছে...';
+            const statusMessageElement = document.getElementById(`status-message-${taskId}`);
+            if (statusMessageElement) statusMessageElement.textContent = 'কোড ভেরিফাই করা হচ্ছে...';
+
+            if (submittedCode === '') {
+                alert('ভিডিও কোড প্রবেশ করুন।');
+                button.disabled = false;
+                button.textContent = 'ক্লেম করুন';
+                if (statusMessageElement) statusMessageElement.textContent = '';
+                return;
+            }
+
+            if (submittedCode !== correctCode) {
+                alert('ভুল কোড! সঠিক কোড দিয়ে আবার চেষ্টা করুন।');
+                button.disabled = false;
+                button.textContent = 'ক্লেম করুন';
+                if (statusMessageElement) statusMessageElement.textContent = '';
+                return;
+            }
+
+            const userRef = ref(database, `users/${userId}`);
+
+            try {
+                const userSnapshot = await get(userRef);
+                let userData = userSnapshot.val();
+
+                // প্রিমিয়াম মেম্বার চেক (আবারও নিশ্চিত করা)
+                if (!userData || !userData.premiumPlan || userData.premiumEndDate <= Date.now()) {
+                    alert('আপনি প্রিমিয়াম মেম্বার নন অথবা আপনার প্রিমিয়াম মেয়াদ শেষ হয়ে গেছে।');
+                    button.disabled = false;
+                    button.textContent = 'ক্লেম করুন';
+                    if (statusMessageElement) statusMessageElement.textContent = '';
+                    return;
+                }
+                
+                // ২৪ ঘণ্টা চেকিং
+                const lastClaimTime = (userData.lastClaimedTaskTimes && userData.lastClaimedTaskTimes[taskId]) || 0;
+                const now = Date.now();
+                const twentyFourHours = 24 * 60 * 60 * 1000;
+
+                if ((now - lastClaimTime) < twentyFourHours) {
+                    alert('আপনি এই কাজটি ২৪ ঘণ্টার মধ্যে একবারই ক্লেম করতে পারবেন।');
+                    button.disabled = false; // বাটনটি আবার সক্রিয় করুন
+                    button.textContent = '২৪ ঘণ্টা পর ক্লেম করুন';
+                    if (statusMessageElement) statusMessageElement.textContent = '';
+                    return;
+                }
+
+                // ব্যালেন্সে টাকা যোগ করুন
+                const currentBalance = parseFloat(userData.balance || 0);
+                const newBalance = (currentBalance + reward).toFixed(2);
+
+                // ইউজারের শেষ ক্লেমের সময় আপডেট করুন এবং ব্যালেন্স যোগ করুন
+                await update(userRef, {
+                    balance: newBalance,
+                    [`lastClaimedTaskTimes/${taskId}`]: now // এই টাস্কের শেষ ক্লেমের সময় আপডেট
+                });
+
+                alert(`আপনি সফলভাবে ৳${reward.toFixed(2)} পেয়েছেন! আপনার ব্যালেন্সে যোগ হয়েছে।`);
+                button.textContent = 'ক্লেমড'; // কাজ ক্লেম করার পর বাটনটি 'ক্লেমড' দেখাবে
+                if (statusMessageElement) statusMessageElement.textContent = ''; // স্ট্যাটাস মেসেজ খালি করুন
+                if (codeInput) codeInput.value = ''; // ইনপুট ফিল্ড খালি করুন
+                if (codeInput) codeInput.disabled = true; // ইনপুট ফিল্ড ডিজেবল করুন
+                
+                // UI আপডেট করার জন্য কাজগুলো পুনরায় লোড করুন (যাতে কাউন্টডাউন শুরু হয়)
+                loadPremiumTasks();
+
+
+            } catch (error) {
+                console.error("কাজ ক্লেম করতে সমস্যা:", error);
+                alert('কাজ ক্লেম করার সময় একটি সমস্যা হয়েছে: ' + error.message);
+                button.disabled = false;
+                button.textContent = 'ক্লেম করুন';
+                if (statusMessageElement) statusMessageElement.textContent = '';
+            }
+        }
+
+
+        // ইউজার স্টেটাস চেক করা এবং কাজ লোড করা
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                loadPremiumTasks(); // ইউজার লগইন থাকলে কাজ লোড করুন
+            } else {
+                // ইউজার লগইন করা নেই, লগইন পেজে রিডাইরেক্ট করুন
+                alert('এই ফিচারটি ব্যবহার করতে লগইন করুন।');
+                window.location.href = 'login.html'; // আপনার লগইন পেজের ফাইল নাম
+            }
+        });
+    </script>
+</body>
+</html>

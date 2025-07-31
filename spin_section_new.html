@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ডেইলি স্পিন - Taka Gor BD</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Base Styles (Matching your homepage theme) */
+        :root {
+            --primary-red: #FF0000;
+            --secondary-white: #FFFFFF;
+            --text-dark: #333;
+            --text-light: #eee;
+            --border-light: #ddd;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+            /* Spin Wheel Colors - adjusted for better contrast */
+            --wheel-color-1: #FFD700; /* Gold */
+            --wheel-color-2: #FF4500; /* OrangeRed */
+            --wheel-color-3: #1E90FF; /* DodgerBlue */
+            --wheel-color-4: #3CB371; /* MediumSeaGreen */
+            --wheel-color-5: #9932CC; /* DarkOrchid */
+            --wheel-color-6: #FFD700; /* Gold */
+            --wheel-color-7: #FF4500; /* OrangeRed */
+            --wheel-color-8: #1E90FF; /* DodgerBlue */
+            --wheel-color-9: #3CB371; /* MediumSeaGreen */
+            --wheel-color-10: #9932CC; /* DarkOrchid */
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f6;
+            color: var(--text-dark);
+            overflow-x: hidden;
+            padding-bottom: 70px; /* Space for bottom navigation */
+            -webkit-overflow-scrolling: touch;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: var(--primary-red);
+            color: var(--secondary-white);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .header .history-btn {
+            background: none;
+            border: none;
+            color: var(--secondary-white);
+            font-size: 20px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .header .history-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 20px;
+            box-sizing: border-box;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Daily Task Section */
+        .daily-task-section {
+            background-color: var(--secondary-white);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: var(--box-shadow);
+            text-align: center;
+            width: 100%;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .daily-task-section h3 {
+            color: var(--primary-red);
+            font-size: 22px;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .task-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .task-item img {
+            width: 120px;
+            height: 120px;
+            border-radius: 10px;
+            object-fit: cover;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .task-item p {
+            font-size: 16px;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .do-task-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .do-task-btn:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+        }
+        .do-task-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .do-task-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        .do-task-btn.timer-active {
+            background-color: #007bff; /* Blue for timer */
+        }
+
+        /* Spin Wheel Section (Initially Hidden) */
+        .spin-wheel-section {
+            display: none;
+            background-color: var(--secondary-white);
+            padding: 30px 20px;
+            border-radius: 15px;
+            box-shadow: var(--box-shadow);
+            text-align: center;
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 20px;
+        }
+
+        .spin-wheel-section h2 {
+            color: var(--primary-red);
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 24px;
+        }
+
+        .spin-wheel-area {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            margin: 0 auto 30px;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+            border: 5px solid #f0f0f0;
+        }
+
+        .spin-wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-image: conic-gradient(
+                var(--wheel-color-1) 0% 10%,
+                var(--wheel-color-2) 10% 20%,
+                var(--wheel-color-3) 20% 30%,
+                var(--wheel-color-4) 30% 40%,
+                var(--wheel-color-5) 40% 50%,
+                var(--wheel-color-6) 50% 60%,
+                var(--wheel-7) 60% 70%,
+                var(--wheel-color-8) 70% 80%,
+                var(--wheel-color-9) 80% 90%,
+                var(--wheel-color-10) 90% 100%
+            );
+            transition: transform 4s cubic-bezier(0.25, 0.1, 0.25, 1);
+            position: relative;
+        }
+
+        /* Spin Pointer (Arrow) */
+        .spin-pointer {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-bottom: 25px solid var(--primary-red);
+            z-index: 2;
+        }
+
+        /* Center Circle for Spin Button */
+        .spin-button-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 3;
+            background-color: var(--primary-red);
+            color: var(--secondary-white);
+            border-radius: 50%;
+            width: 90px;
+            height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .spin-button-center:hover {
+            background-color: #e60000;
+            transform: translate(-50%, -50%) scale(1.05);
+        }
+        .spin-button-center:active {
+            transform: translate(-50%, -50%) scale(0.98);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .spin-button-center:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .result-message {
+            margin-top: 25px;
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--text-dark);
+            min-height: 25px;
+            text-align: center;
+        }
+
+        /* Overlay for Congratulations Message */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1002;
+            justify-content: center;
+            align-items: center;
+            animation: fadeInOverlay 0.3s ease-out;
+        }
+
+        @keyframes fadeInOverlay {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .congratulations-box {
+            background-color: var(--secondary-white);
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 350px;
+            width: 90%;
+            transform: scale(0.9);
+            animation: popIn 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .congratulations-box h3 {
+            color: #28a745;
+            font-size: 28px;
+            margin-top: 0;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .congratulations-box h3 i {
+            margin-right: 10px;
+        }
+
+        .congratulations-box p {
+            font-size: 22px;
+            font-weight: bold;
+            color: var(--text-dark);
+            margin-bottom: 25px;
+        }
+
+        .congratulations-box .ok-btn {
+            background-color: var(--primary-red);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .congratulations-box .ok-btn:hover {
+            background-color: #e60000;
+        }
+
+        /* Bottom Navigation */
+        .bottom-navigation {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--secondary-white);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 1000;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #777;
+            font-size: 12px;
+            transition: color 0.3s ease;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        .nav-item.active {
+            color: var(--primary-red);
+        }
+        .nav-item:hover {
+            color: var(--primary-red);
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 480px) {
+            .header {
+                padding: 12px 15px;
+            }
+            .header .logo {
+                font-size: 20px;
+            }
+            .main-content {
+                padding: 15px;
+            }
+            .daily-task-section {
+                padding: 20px;
+            }
+            .daily-task-section h3 {
+                font-size: 20px;
+            }
+            .task-item img {
+                width: 100px;
+                height: 100px;
+            }
+            .task-item p {
+                font-size: 14px;
+            }
+            .do-task-btn {
+                padding: 12px 25px;
+                font-size: 16px;
+            }
+            .spin-wheel-section {
+                padding: 25px 15px;
+            }
+            .spin-wheel-section h2 {
+                font-size: 20px;
+            }
+            .spin-wheel-area {
+                width: 240px;
+                height: 240px;
+            }
+            .spin-button-center {
+                width: 80px;
+                height: 80px;
+                font-size: 14px;
+            }
+            .result-message {
+                font-size: 18px;
+            }
+            .congratulations-box {
+                padding: 30px 20px;
+            }
+            .congratulations-box h3 {
+                font-size: 24px;
+            }
+            .congratulations-box p {
+                font-size: 18px;
+            }
+            .congratulations-box .ok-btn {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+            .bottom-navigation {
+                padding: 8px 0;
+            }
+            .nav-item i {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">Taka Gor BD</div>
+        <button class="history-btn" id="historyBtn">
+            <i class="fas fa-history"></i>
+        </button>
+    </div>
+
+    <div class="main-content">
+        <div class="daily-task-section" id="dailyTaskSection">
+            <h3>ডেইলি ইনকাম টাস্ক</h3>
+            <div class="task-item">
+                <img src="https://via.placeholder.com/120/FF0000/FFFFFF?text=Daily+Spin" alt="Daily Spin Icon">
+                <p id="taskDescription">প্রতিদিন একবার স্পিন করে আপনার দৈনিক ইনকাম সংগ্রহ করুন!</p>
+                <button class="do-task-btn" id="doTaskBtn">Do Task</button>
+            </div>
+        </div>
+
+        <div class="spin-wheel-section" id="spinWheelSection">
+            <h2>আপনার ভাগ্য পরীক্ষা করুন!</h2>
+            <div class="spin-wheel-area">
+                <div class="spin-pointer"></div>
+                <div class="spin-wheel" id="spinWheel">
+                    </div>
+                <button class="spin-button-center" id="spinButton">
+                    স্পিন করুন!
+                </button>
+            </div>
+            <div class="result-message" id="resultMessage">
+                </div>
+        </div>
+    </div>
+
+    <div class="overlay" id="congratulationsOverlay">
+        <div class="congratulations-box">
+            <h3><i class="fas fa-check-circle"></i> অভিনন্দন!</h3>
+            <p id="congratulationsAmount">আপনি জিতেছেন ৳0!</p>
+            <button class="ok-btn" id="okButton">ওকে</button>
+        </div>
+    </div>
+
+    <div class="bottom-navigation">
+        <a href="dashboard.html" class="nav-item active">
+            <i class="fas fa-home"></i>
+            <span>হোম</span>
+        </a>
+        <a href="premium.html" class="nav-item">
+            <i class="fas fa-crown"></i>
+            <span>প্রিমিয়াম</span>
+        </a>
+        <a href="wallet.html" class="nav-item">
+            <i class="fas fa-wallet"></i>
+            <span>ওয়ালেট</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <i class="fas fa-user-circle"></i>
+            <span>প্রোফাইল</span>
+        </a>
+    </div>
+
+    <script type="module">
+        // Firebase imports - MAKE SURE YOUR firebase-app.js VERSION IS CORRECT
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getDatabase, ref, get, update, set, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+        // IMPORTANT: Replace with your actual Firebase project configuration
+        // Make sure this matches exactly with your Firebase project's config
+        const firebaseConfig = {
+          apiKey: "AIzaSyA0nwj-qooOderNiLvmILB-gIPouy2HG4c", 
+          authDomain: "takagorbd.firebaseapp.com",
+          databaseURL: "https://takagorbd-default-rtdb.asia-southeast1.firebasedatabase.app",
+          projectId: "takagorbd",
+          storageBucket: "takagorbd.firebasestorage.app",
+          messagingSenderId: "531548262665",
+          appId: "1:531548262665:web:85fb34ea635dae7ddc43d8",
+          measurementId: "G-TZB0NHKYGY"
+        };
+        
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+        let currentUser = null; // To store the currently logged-in user
+
+        // --- DOM Elements ---
+        const dailyTaskSection = document.getElementById('dailyTaskSection');
+        const doTaskBtn = document.getElementById('doTaskBtn');
+        const taskDescription = document.getElementById('taskDescription'); // New: for dynamic text
+        const spinWheelSection = document.getElementById('spinWheelSection');
+        const spinWheel = document.getElementById('spinWheel');
+        const spinButton = document.getElementById('spinButton');
+        const resultMessage = document.getElementById('resultMessage');
+        const congratulationsOverlay = document.getElementById('congratulationsOverlay');
+        const congratulationsAmount = document.getElementById('congratulationsAmount');
+        const okButton = document.getElementById('okButton');
+        const historyBtn = document.getElementById('historyBtn');
+
+        // --- Spin Wheel Configuration ---
+        // Visual segments - these are just for display, actual win is determined by logic
+        const segmentValues = ["৳2", "৳3", "৳5", "৳2", "৳3", "৳10", "৳2", "৳3", "৳20", "৳50"]; 
+        const normalWinningAmounts = [2, 3, 5]; 
+        const premiumWinningAmounts = [10, 20, 30, 50, 99]; // Added 10 for premium, high amounts for rare
+
+        // Dynamically add text labels to the wheel segments
+        const numSegments = segmentValues.length;
+        const anglePerSegment = 360 / numSegments;
+
+        segmentValues.forEach((value, index) => {
+            const textElement = document.createElement('div');
+            textElement.className = 'wheel-segment-text';
+            textElement.textContent = value;
+            
+            const textAngle = anglePerSegment * index + (anglePerSegment / 2);
+            textElement.style.position = 'absolute';
+            textElement.style.left = '50%';
+            textElement.style.top = '50%';
+            textElement.style.transform = `rotate(${textAngle}deg) translate(85px, -50%)`;
+            textElement.style.transformOrigin = '0% 50%';
+            textElement.style.whiteSpace = 'nowrap';
+            textElement.style.fontWeight = 'bold';
+            textElement.style.color = '#333';
+            textElement.style.fontSize = '14px';
+            textElement.style.textShadow = '1px 1px 2px rgba(255,255,255,0.8)';
+            spinWheel.appendChild(textElement);
+        });
+
+        // --- Helper Functions ---
+
+        // Function to determine the winning amount based on user status and spin count
+        function getWinningAmount(isPremiumUser = false, spinCount = 0) {
+            let amount = 2; // Default smallest win
+
+            if (isPremiumUser) {
+                // Premium users: higher chance for mid-range, rare chance for very high
+                const rand = Math.random();
+                if (rand < 0.4) amount = 5; // 40% for 5
+                else if (rand < 0.7) amount = 10; // 30% for 10
+                else if (rand < 0.9) amount = 20; // 20% for 20
+                else amount = Math.random() < 0.5 ? 30 : 50; // 10% for 30 or 50
+            } else {
+                // Normal users: very high chance for 2-3, rare for 5-10
+                const rand = Math.random();
+                if (rand < 0.8) amount = Math.random() < 0.5 ? 2 : 3; // 80% for 2 or 3
+                else if (rand < 0.95) amount = 5; // 15% for 5
+                else amount = 10; // 5% for 10
+            }
+
+            // After 20-25 spins (or 1-1.5 months), slightly increase chance for higher amounts for ALL users
+            // This is a simplified example. In a real app, 'spinCount' or 'timeRegistered' would be used.
+            if (spinCount >= 20 && Math.random() < 0.1) { // 10% chance for a boost after 20 spins
+                const boostedAmounts = [10, 20, 30];
+                amount = boostedAmounts[Math.floor(Math.random() * boostedAmounts.length)];
+            }
+            
+            return amount;
+        }
+
+        // Function to map the winning amount to a segment index for visual landing
+        function getSegmentIndexForAmount(amount) {
+            // This mapping determines where the pointer *visibly* lands.
+            // Ensure these map to segments that visually represent the winning amounts.
+            if (amount === 99) return 9; // Represents ৳50 segment in the visual array
+            if (amount === 50) return 9;
+            if (amount === 30) return 8; // Represents ৳20 segment
+            if (amount === 20) return 8; // Same as ৳20 for visual variety
+            if (amount === 10) return 5;
+            if (amount === 5) return 2;
+            if (amount === 3) return 1;
+            return 0; // Default to ৳2
+        }
+
+        // Function to show/hide sections correctly and reset UI
+        function showDailyTaskSection() {
+            dailyTaskSection.style.display = 'block';
+            spinWheelSection.style.display = 'none';
+            congratulationsOverlay.style.display = 'none'; // Ensure overlay is hidden
+            spinButton.disabled = false; // Enable spin button for next time
+            resultMessage.textContent = ''; // Clear result message
+            // Reset wheel position without animation
+            spinWheel.style.transition = 'none';
+            spinWheel.style.transform = `rotate(0deg)`;
+        }
+
+        // Function to update the countdown timer on the button
+        let countdownInterval;
+        function startCountdown(endTime) {
+            doTaskBtn.classList.add('timer-active');
+            doTaskBtn.disabled = true;
+
+            const updateTimer = () => {
+                const now = Date.now();
+                const timeLeft = endTime - now;
+
+                if (timeLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    doTaskBtn.textContent = 'Do Task';
+                    taskDescription.textContent = 'প্রতিদিন একবার স্পিন করে আপনার দৈনিক ইনকাম সংগ্রহ করুন!';
+                    doTaskBtn.classList.remove('timer-active');
+                    if (currentUser) {
+                         doTaskBtn.disabled = false; // Enable if user is logged in
+                    } else {
+                        doTaskBtn.textContent = 'লগইন করুন'; // If not logged in, prompt login
+                    }
+                    return;
+                }
+
+                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+                doTaskBtn.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                taskDescription.textContent = 'আপনি আজ স্পিন করে ফেলেছেন। টাইমার শেষ হলে আবার স্পিন করতে পারবেন।';
+            };
+
+            clearInterval(countdownInterval); // Clear any existing interval
+            countdownInterval = setInterval(updateTimer, 1000);
+            updateTimer(); // Initial call to display immediately
+        }
+
+        // Function to check daily spin limit (Firebase-dependent)
+        async function checkDailySpinLimit(user) {
+            if (!user) {
+                doTaskBtn.disabled = true;
+                doTaskBtn.textContent = 'লগইন করুন';
+                taskDescription.textContent = 'স্পিন করার জন্য আপনাকে প্রথমে লগইন করতে হবে।';
+                return;
+            }
+
+            const userRef = ref(database, 'users/' + user.uid);
+            try {
+                const snapshot = await get(userRef);
+                const userData = snapshot.exists() ? snapshot.val() : {};
+                const lastSpinTime = userData.lastSpinTime || 0;
+                const now = Date.now();
+                const twentyFourHours = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+                if (now - lastSpinTime < twentyFourHours) {
+                    const endTime = lastSpinTime + twentyFourHours;
+                    startCountdown(endTime);
+                } else {
+                    doTaskBtn.disabled = false;
+                    doTaskBtn.textContent = 'Do Task';
+                    taskDescription.textContent = 'প্রতিদিন একবার স্পিন করে আপনার দৈনিক ইনকাম সংগ্রহ করুন!';
+                    doTaskBtn.classList.remove('timer-active');
+                }
+            } catch (error) {
+                console.error("Error checking spin limit:", error);
+                alert("স্পিন লিমিট চেক করতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।");
+                doTaskBtn.disabled = true; // Disable on error
+                doTaskBtn.textContent = 'ত্রুটি';
+                taskDescription.textContent = 'ডেটা লোড করতে সমস্যা হয়েছে।';
+            }
+        }
+
+        // --- Event Listeners ---
+
+        // Initially hide the spin wheel section and ensure daily task is shown
+        document.addEventListener('DOMContentLoaded', () => {
+            showDailyTaskSection();
+            // Auth state listener will handle initial checkDailySpinLimit
+        });
+
+
+        // Show spin wheel when "Do Task" is clicked
+        doTaskBtn.addEventListener('click', async () => {
+            if (doTaskBtn.disabled) {
+                // If the button is disabled, it means user already spun or not logged in.
+                // The checkDailySpinLimit handles the specific message.
+                return; 
+            }
+            if (!currentUser) {
+                alert("স্পিন করার জন্য আপনাকে প্রথমে লগইন করতে হবে!");
+                // window.location.href = 'login.html'; // Redirect to login
+                return;
+            }
+
+            // Re-check spin limit just before showing spin wheel
+            const userRef = ref(database, 'users/' + currentUser.uid);
+            try {
+                const snapshot = await get(userRef);
+                const userData = snapshot.val();
+                const lastSpinTime = userData.lastSpinTime || 0;
+                const now = Date.now();
+                const twentyFourHours = 24 * 60 * 60 * 1000;
+
+                if (now - lastSpinTime < twentyFourHours) {
+                    alert("আপনি আজ স্পিন করে ফেলেছেন। আগামীকাল আবার চেষ্টা করুন!");
+                    showDailyTaskSection(); // Go back to task section and update button
+                    checkDailySpinLimit(currentUser); // Update timer immediately
+                    return;
+                }
+            } catch (error) {
+                console.error("Failed to re-check spin limit before showing wheel:", error);
+                alert("স্পিন চেক করতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।");
+                showDailyTaskSection();
+                return;
+            }
+            
+            dailyTaskSection.style.display = 'none';
+            spinWheelSection.style.display = 'block'; // Show the spin wheel
+            resultMessage.textContent = ''; // Clear any previous messages
+        });
+
+        // Spin button click handler
+        spinButton.addEventListener('click', async () => {
+            if (!currentUser) {
+                alert("স্পিন করার জন্য আপনাকে প্রথমে লগইন করতে হবে!");
+                // window.location.href = 'login.html'; 
+                return;
+            }
+
+            // One last check before actual spin to prevent race conditions
+            const userRef = ref(database, 'users/' + currentUser.uid);
+            try {
+                const snapshot = await get(userRef);
+                const userData = snapshot.val();
+                const lastSpinTime = userData.lastSpinTime || 0;
+                const now = Date.now();
+                const twentyFourHours = 24 * 60 * 60 * 1000;
+
+                if (now - lastSpinTime < twentyPagerHours) {
+                    alert("আপনি আজ স্পিন করে ফেলেছেন। আগামীকাল আবার চেষ্টা করুন!");
+                    showDailyTaskSection();
+                    checkDailySpinLimit(currentUser);
+                    return;
+                }
+            } catch (error) {
+                console.error("Failed to re-check spin limit on spin button click:", error);
+                alert("স্পিন চেক করতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।");
+                showDailyTaskSection();
+                return;
+            }
+
+            spinButton.disabled = true;
+            resultMessage.textContent = 'স্পিন হচ্ছে... আপনার ভাগ্য পরীক্ষা হচ্ছে!';
+
+            // Get user data to determine spin amounts
+            const userRefData = await get(userRef);
+            const userData = userRefData.exists() ? userRefData.val() : {};
+            const isPremiumUser = userData.isPremium || false; // Assume 'isPremium' field in user data
+            const spinCount = userData.spinCount || 0; // Assume 'spinCount' field in user data
+
+            const winningAmount = getWinningAmount(isPremiumUser, spinCount);
+            const winningSegmentIndex = getSegmentIndexForAmount(winningAmount);
+            
+            // Calculate total rotation for visual effect
+            const minFullRotations = 5; 
+            const maxFullRotations = 10; 
+            const fullRotations = Math.floor(Math.random() * (maxFullRotations - minFullRotations + 1)) + minFullRotations;
+            
+            const targetAngle = (winningSegmentIndex * anglePerSegment) + (anglePerSegment / 2);
+            const randomOffset = (Math.random() - 0.5) * (anglePerSegment * 0.5); 
+            const finalLandingAngle = (360 - (targetAngle + randomOffset)) % 360; 
+
+            const totalDegreesToSpin = (fullRotations * 360) + finalLandingAngle;
+
+            spinWheel.style.transition = 'transform 4s cubic-bezier(0.25, 0.1, 0.25, 1)';
+            spinWheel.style.transform = `rotate(${totalDegreesToSpin}deg)`;
+
+            // After the spin animation completes
+            spinWheel.addEventListener('transitionend', async () => {
+                const userId = currentUser.uid;
+                const spinHistoryRef = ref(database, 'spinHistory/' + userId);
+
+                try {
+                    // Update balance, last spin time, and spin count
+                    const currentBalance = userData.balance || 0;
+                    const newBalance = currentBalance + winningAmount;
+                    const newSpinCount = (userData.spinCount || 0) + 1;
+
+                    await update(userRef, { 
+                        balance: newBalance, 
+                        lastSpinTime: Date.now(),
+                        spinCount: newSpinCount // Update spin count
+                    });
+                    console.log(`Balance updated to ${newBalance}. Spin count: ${newSpinCount}`);
+
+                    // Add to spin history
+                    const newSpinEntryRef = push(spinHistoryRef); // Generate unique key
+                    await set(newSpinEntryRef, {
+                        amount: winningAmount,
+                        timestamp: Date.now(),
+                        type: 'spin'
+                    });
+                    console.log('Spin history recorded.');
+
+                    // Display congratulations message after successful Firebase update
+                    congratulationsAmount.textContent = `আপনি জিতেছেন ৳${winningAmount}!`;
+                    congratulationsOverlay.style.display = 'flex'; // Show overlay
+                    resultMessage.textContent = ''; // Clear temporary message
+
+                } catch (error) {
+                    console.error("Firebase update failed:", error);
+                    alert("টাকা যোগ করতে বা হিস্টোরি সেভ করতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।");
+                    resultMessage.textContent = 'স্পিন সফল হয়নি। আবার চেষ্টা করুন।';
+                    spinButton.disabled = false; // Re-enable if Firebase update fails
+                }
+            }, { once: true }); // Ensure this listener only runs once per spin
+        });
+
+        // OK button in congratulations message
+        okButton.addEventListener('click', () => {
+            showDailyTaskSection(); // Reset to daily task view
+            checkDailySpinLimit(currentUser); // Re-check and update button state
+        });
+
+        // History button click handler
+        historyBtn.addEventListener('click', () => {
+            if (currentUser) {
+                window.location.href = 'history.html'; // Redirect to history page
+            } else {
+                alert("আপনার আয়ের ইতিহাস দেখতে লগইন করুন।");
+            }
+        });
+
+        // Firebase Auth State Listener
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                console.log("User logged in:", user.uid);
+                checkDailySpinLimit(currentUser); // Check spin limit on user login/auth state change
+            } else {
+                currentUser = null;
+                console.log("No user logged in. Redirecting to login or prompting.");
+                alert("দয়া করে স্পিন করতে লগইন করুন।"); // Inform user
+                showDailyTaskSection(); // Ensure UI is reset
+                doTaskBtn.disabled = true;
+                doTaskBtn.textContent = 'লগইন করুন';
+                taskDescription.textContent = 'স্পিন করার জন্য আপনাকে প্রথমে লগইন করতে হবে।';
+                // window.location.href = 'login.html'; // Uncomment to redirect to login
+            }
+        });
+    </script>
+</body>
+</html>

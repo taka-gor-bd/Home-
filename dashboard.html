@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ড্যাশবোর্ড - Taka Gor BD</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* আপনার বিদ্যমান CSS কোড এখানে থাকবে */
+        :root {
+            --primary-red: #FF0000;
+            --secondary-white: #FFFFFF;
+            --text-dark: #333;
+            --text-light: #eee;
+            --border-light: #ddd;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f6;
+            color: var(--text-dark);
+            overflow-x: hidden;
+            padding-bottom: 70px; /* নেভিগেশন বারের জন্য নিচ থেকে প্যাডিং */
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* হেডার */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: var(--primary-red);
+            color: var(--secondary-white);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .header .notification-icon {
+            font-size: 24px;
+            color: var(--secondary-white);
+            text-decoration: none;
+            position: relative;
+        }
+
+        /* ইউজার প্রোফাইল বক্স */
+        .profile-box {
+            background-color: var(--secondary-white);
+            margin: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: var(--box-shadow);
+            display: flex;
+            align-items: center;
+        }
+
+        .profile-box .profile-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #ccc; /* প্রোফাইল আইকনের জন্য ডিফল্ট ব্যাকগ্রাউন্ড */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            color: var(--secondary-white);
+            margin-right: 15px;
+            overflow: hidden; /* ইমেজ প্রোফাইল আইকনের সাথে মানিয়ে যাবে */
+        }
+
+        .profile-box .profile-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-info h3 {
+            margin: 0;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+        }
+
+        .profile-info .verified-tick {
+            color: #007bff; /* ব্লু টিক কালার */
+            font-size: 16px;
+            margin-left: 8px;
+        }
+
+        /* VIP ব্যাজ */
+        .vip-badge {
+            display: inline-block;
+            background-color: #FFD700; /* গোল্ডেন কালার */
+            color: #333;
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-left: 8px;
+            vertical-align: middle;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden; /* গ্লো ইফেক্টের জন্য */
+        }
+
+        /* VIP গ্লো ইফেক্ট (ঐচ্ছিক) */
+        .vip-badge::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(255,255,255,0.8) 10%, transparent 70%);
+            border-radius: 50%;
+            opacity: 0;
+            animation: vipGlow 2s infinite ease-out;
+        }
+
+        @keyframes vipGlow {
+            0% { width: 0; height: 0; opacity: 0; }
+            50% { width: 200%; height: 200%; opacity: 0.5; }
+            100% { width: 0; height: 0; opacity: 0; transform: translate(100%, 100%); }
+        }
+
+
+        /* অ্যাক্টিভেশন পপআপ (এখন ফ্রি আইডি অ্যাক্টিভেশন) */
+        .activation-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            display: none; /* প্রাথমিকভাবে লুকানো থাকবে */
+        }
+
+        .popup-content {
+            background: var(--secondary-white);
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: var(--box-shadow);
+            max-width: 300px;
+        }
+
+        .popup-content h4 {
+            margin-top: 0;
+            color: var(--primary-red);
+        }
+
+        .popup-content button {
+            background-color: var(--primary-red);
+            color: var(--secondary-white);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 15px;
+            transition: background-color 0.3s ease;
+        }
+
+        .popup-content button:hover {
+            background-color: #c00;
+        }
+
+        /* ডেইলি স্পিন পপআপ */
+        .daily-spin-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            display: none; /* প্রাথমিকভাবে লুকানো থাকবে */
+        }
+
+        .daily-spin-popup .popup-content {
+            background: linear-gradient(135deg, #f8f8f8, #e0e0e0);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 350px;
+            position: relative;
+            animation: fadeInScale 0.3s ease-out;
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .daily-spin-popup .popup-content .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 28px;
+            color: #aaa;
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.2s ease;
+        }
+
+        .daily-spin-popup .popup-content .close-btn:hover {
+            color: #666;
+        }
+
+        .daily-spin-popup .popup-content i.fa-spinner {
+            font-size: 60px;
+            color: var(--primary-red);
+            margin-bottom: 20px;
+            animation: spinRotate 2s infinite linear; /* স্পিন আইকনের অ্যানিমেশন */
+        }
+
+        @keyframes spinRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .daily-spin-popup .popup-content h4 {
+            color: var(--primary-red);
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .daily-spin-popup .popup-content p {
+            font-size: 16px;
+            color: var(--text-dark);
+            margin-bottom: 25px;
+        }
+
+        .daily-spin-popup .popup-content button {
+            background-color: var(--primary-red);
+            color: var(--secondary-white);
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .daily-spin-popup .popup-content button:hover {
+            background-color: #c00;
+            transform: translateY(-2px);
+        }
+
+
+        /* স্লাইডার সেকশন */
+        .image-slider {
+            margin: 20px;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: var(--box-shadow);
+            background-color: var(--secondary-white);
+            padding: 10px 0; /* স্লাইডারের ভেতরের দিকে প্যাডিং */
+        }
+
+        .slider-wrapper {
+            display: flex;
+            width: fit-content; /* কন্টেন্ট অনুযায়ী প্রস্থ */
+            animation: slideAnimation 15s linear infinite; /* স্লাইড অ্যানিমেশন */
+        }
+
+        .slider-item {
+            flex: 0 0 auto; /* ফ্লেক্স আইটেম সঙ্কুচিত হবে না */
+            width: 120px; /* প্রতিটি স্লাইডারের ছবির জন্য নির্দিষ্ট প্রস্থ */
+            height: 80px; /* প্রতিটি স্লাইডারের ছবির জন্য নির্দিষ্ট উচ্চতা */
+            margin: 0 10px; /* ছবির মাঝে ফাঁকা স্থান */
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .slider-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        @keyframes slideAnimation {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(calc(-140px * 5)); /* (ছবি প্রস্থ + মার্জিন) * ছবির সংখ্যা */ }
+        }
+
+        /* ব্যালেন্স সেকশন */
+        .balance-section {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px;
+            text-align: center;
+        }
+
+        .balance-box {
+            background-color: var(--secondary-white);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: var(--box-shadow);
+            flex: 1;
+            margin: 0 10px;
+        }
+
+        .balance-box h4 {
+            margin-top: 0;
+            color: var(--primary-red);
+            font-size: 16px; /* ছোট ফন্ট সাইজ */
+            text-transform: uppercase; /* আপারকেস */
+        }
+
+        .balance-box p {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 10px 0 0;
+        }
+
+        .balance-box.referral p {
+            font-size: 20px; /* রেফার ব্যালেন্স ছোট হবে */
+            color: #666;
+        }
+
+        /* রেফারেল সেকশন */
+        .referral-section {
+            background-color: var(--secondary-white);
+            margin: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .referral-section h4 {
+            margin-top: 0;
+            color: var(--primary-red);
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .referral-input-group {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border-light);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 20px; /* শেয়ার বাটনের আগে মার্জিন */
+        }
+
+        .referral-input-group input {
+            flex-grow: 1;
+            border: none;
+            padding: 10px;
+            font-size: 16px;
+            outline: none;
+            background-color: #f9f9f9;
+        }
+
+        .referral-input-group .copy-icon {
+            padding: 10px 15px;
+            background-color: #f0f0f0;
+            cursor: pointer;
+            color: var(--text-dark);
+            transition: background-color 0.3s ease;
+        }
+
+        .referral-input-group .copy-icon:hover {
+            background-color: #e0e0e0;
+        }
+
+        .share-buttons {
+            display: flex;
+            justify-content: space-around; /* বাটনগুলোর মাঝে সমান ফাঁকা স্থান */
+            gap: 10px; /* বাটনগুলোর মাঝে আরও সুস্পষ্ট গ্যাপ */
+            flex-wrap: wrap; /* ছোট স্ক্রিনে বাটনগুলো নিচে নিচে আসবে */
+        }
+
+        .share-buttons button {
+            flex: 1 1 auto; /* ফ্লেক্স আইটেম স্বয়ংক্রিয়ভাবে সঙ্কুচিত/প্রসারিত হবে */
+            max-width: 150px; /* প্রতি বাটনের সর্বাধিক প্রস্থ */
+            background-color: #4CAF50; /* সবুজ কালার উদাহরন */
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px; /* আইকন এবং টেক্সটের মাঝে গ্যাপ */
+        }
+        .share-buttons button.whatsapp { background-color: #25D366; }
+        .share-buttons button.facebook { background-color: #1877F2; }
+        .share-buttons button.telegram { background-color: #0088CC; }
+
+        .share-buttons button:hover {
+            opacity: 0.9;
+        }
+
+        /* ফ্রি আইডি অ্যাক্টিভেশন সেকশন */
+        .free-id-activation-section {
+            background-color: var(--secondary-white);
+            margin: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: var(--box-shadow);
+            text-align: center;
+            display: none; /* প্রাথমিকভাবে লুকানো থাকবে */
+        }
+
+        .free-id-activation-section h4 {
+            margin-top: 0;
+            color: #ffc107; /* হলুদ */
+            margin-bottom: 15px;
+        }
+
+        .free-id-activation-section .activate-id-btn {
+            background-color: #ffc107; /* হলুদ */
+            color: var(--text-dark);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .free-id-activation-section .activate-id-btn:hover {
+            background-color: #e0a800;
+        }
+        .free-id-activation-section .activate-id-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+
+        /* ফ্রি প্রিমিয়াম ট্রায়াল সেকশন */
+        .free-premium-trial-section {
+            background-color: var(--secondary-white);
+            margin: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: var(--box-shadow);
+            text-align: center;
+            display: none; /* প্রাথমিকভাবে লুকানো থাকবে */
+        }
+
+        .free-premium-trial-section h4 {
+            margin-top: 0;
+            color: #007bff;
+            margin-bottom: 15px;
+        }
+
+        .free-premium-trial-section .claim-premium-btn {
+            background-color: #007bff; /* নীল */
+            color: var(--secondary-white);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .free-premium-trial-section .claim-premium-btn:hover {
+            background-color: #0056b3;
+        }
+        .free-premium-trial-section .claim-premium-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+
+        /* অন্যান্য বাটন সেকশন */
+        .feature-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* 120px এর কম হবে না */
+            gap: 15px;
+            margin: 20px;
+        }
+
+        .feature-buttons .btn-feature {
+            background-color: var(--secondary-white);
+            padding: 20px 10px;
+            border-radius: 10px;
+            box-shadow: var(--box-shadow);
+            text-align: center;
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .feature-buttons .btn-feature:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-buttons .btn-feature i {
+            font-size: 30px;
+            margin-bottom: 10px;
+            color: var(--primary-red);
+        }
+
+        /* টেলিগ্রাম জয়েন */
+        .telegram-join {
+            background-color: var(--primary-red);
+            color: var(--secondary-white);
+            margin: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: var(--box-shadow);
+            text-align: center;
+        }
+
+        .telegram-join p {
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .telegram-join a {
+            background-color: var(--secondary-white);
+            color: var(--primary-red);
+            padding: 12px 25px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .telegram-join a:hover {
+            background-color: #f0f0f0;
+            color: #c00;
+        }
+
+
+        /* নেভিগেশন বার (ফুটারে) */
+        .bottom-navigation {
+            position: fixed; /* পার্মানেন্টলি স্ক্রিনে থাকবে */
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--secondary-white);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 1000;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #777;
+            font-size: 12px;
+            transition: color 0.3s ease;
+            flex: 1; /* প্রতিটি আইটেম সমান জায়গা নেবে */
+            min-width: 0; /* ফ্লেক্স আইটেম অতিরিক্ত চওড়া হওয়া এড়াতে */
+        }
+
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        .nav-item.active {
+            color: var(--primary-red);
+        }
+        .nav-item:hover {
+            color: var(--primary-red);
+        }
+
+        /* ছোট স্ক্রিনের জন্য ফন্ট সাইজ এবং প্যাডিং সামঞ্জস্য করা */
+        @media (max-width: 480px) {
+            .header {
+                padding: 12px 15px;
+            }
+            .header .logo {
+                font-size: 20px;
+            }
+            .header .notification-icon {
+                font-size: 20px;
+            }
+            .profile-box {
+                margin: 15px;
+                padding: 15px;
+            }
+            .profile-info h3 {
+                font-size: 16px;
+            }
+            .balance-box {
+                margin: 0 5px;
+                padding: 15px;
+            }
+            .balance-box h4 {
+                font-size: 14px;
+            }
+            .balance-box p {
+                font-size: 22px;
+            }
+            .balance-box.referral p {
+                font-size: 16px;
+            }
+            .image-slider {
+                margin: 15px;
+            }
+            .slider-item {
+                width: 100px;
+                height: 70px;
+                margin: 0 8px;
+            }
+            @keyframes slideAnimation {
+                100% { transform: translateX(calc(-108px * 5)); /* (ছবি প্রস্থ + মার্জিন) * ছবির সংখ্যা */ }
+            }
+            .referral-section {
+                margin: 15px;
+                padding: 15px;
+            }
+            .referral-input-group input {
+                font-size: 14px;
+            }
+            .share-buttons button {
+                padding: 10px 12px;
+                font-size: 14px;
+                flex: 1 1 45%; /* ছোট স্ক্রিনে দুটি কলাম */
+            }
+            .feature-buttons {
+                grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+                gap: 10px;
+                margin: 15px;
+            }
+            .feature-buttons .btn-feature {
+                padding: 15px 5px;
+                font-size: 13px;
+            }
+            .feature-buttons .btn-feature i {
+                font-size: 25px;
+            }
+            .telegram-join {
+                margin: 15px;
+                padding: 15px;
+            }
+            .telegram-join p {
+                font-size: 14px;
+            }
+            .telegram-join a {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+            .bottom-navigation {
+                padding: 8px 0;
+            }
+            .nav-item i {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">Taka Gor BD</div>
+        <a href="notification.html" class="notification-icon" id="notificationLink">
+            <i class="fas fa-bell"></i>
+        </a>
+    </div>
+
+    <div class="profile-box">
+        <div class="profile-icon">
+            <img id="userProfilePic" src="https://via.placeholder.com/50" alt="প্রোফাইল ছবি">
+            </div>
+        <div class="profile-info">
+            <h3 id="userName">ইউজারের নাম
+                <span class="verified-tick" id="verifiedTick" style="display:none;"><i class="fas fa-check-circle"></i></span>
+                <span class="vip-badge" id="vipBadge" style="display:none;">VIP</span>
+            </h3>
+        </div>
+    </div>
+
+    <div class="free-id-activation-section" id="freeIdActivationSection">
+        <h4>আপনার আইডি ফ্রি অ্যাক্টিভেট করুন!</h4>
+        <p>এক সপ্তাহের ফ্রি প্রিমিয়াম ট্রায়াল পেতে আইডি অ্যাক্টিভেশন আবশ্যক।</p>
+        <button class="activate-id-btn" id="activateFreeIdBtn">আইডি অ্যাক্টিভেট করুন</button>
+    </div>
+
+    <div class="free-premium-trial-section" id="freePremiumTrialSection">
+        <h4>১ সপ্তাহের ফ্রি প্রিমিয়াম ট্রায়াল!</h4>
+        <p>আপনার অ্যাক্টিভেটেড আইডিতে প্রিমিয়াম সুবিধা উপভোগ করুন!</p>
+        <button class="claim-premium-btn" id="claimFreePremiumTrialBtn">ফ্রি প্রিমিয়াম নিন</button>
+    </div>
+
+    <div class="daily-spin-popup" id="dailySpinPopup">
+        <div class="popup-content">
+            <span class="close-btn" id="closeSpinPopup">&times;</span>
+            <i class="fas fa-spinner fa-spin"></i>
+            <h4>আপনার ডেইলি স্পিন অপেক্ষা করছে!</h4>
+            <p>আজকের স্পিন সম্পূর্ণ করে জিতে নিন আকর্ষণীয় পুরস্কার!</p>
+            <button id="goToSpinPageBtn">এখনই স্পিন করুন!</button>
+        </div>
+    </div>
+
+    <div class="image-slider">
+        <div class="slider-wrapper" id="imageSliderWrapper">
+            </div>
+    </div>
+
+    <div class="balance-section">
+        <div class="balance-box">
+            <h4>Balance</h4>
+            <p id="mainBalance">৳ 0.00</p>
+        </div>
+        <div class="balance-box referral">
+            <h4>Ref. Balance</h4>
+            <p id="referralBalance">৳ 0.00</p>
+        </div>
+    </div>
+
+    <div class="referral-section">
+        <h4>আপনার রেফারেল</h4>
+        <div class="referral-input-group">
+            <input type="text" id="referralLinkInput" value="https://takagorbd.com/join?ref=REF123456" readonly>
+            <span class="copy-icon" onclick="copyReferralLink()"><i class="fas fa-copy"></i></span>
+        </div>
+        <div class="share-buttons">
+            <button class="whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+            <button class="facebook"><i class="fab fa-facebook"></i> Facebook</button>
+            <button class="telegram"><i class="fab fa-telegram-plane"></i> Telegram</button>
+        </div>
+    </div>
+
+    <div class="feature-buttons">
+        <a href="lottery.html" class="btn-feature">
+            <i class="fas fa-ticket-alt"></i>
+            লটারি
+        </a>
+        <a href="privacy-policy.html" class="btn-feature">
+            <i class="fas fa-shield-alt"></i>
+            প্রাইভেসি পলিসি
+        </a>
+        <a href="help-center.html" class="btn-feature">
+            <i class="fas fa-question-circle"></i>
+            হেল্প সেন্টার
+        </a>
+        <a href="withdraw.html" class="btn-feature">
+            <i class="fas fa-money-bill-wave"></i>
+            উইথড্র
+        </a>
+        <a href="deposit.html" class="btn-feature">
+            <i class="fas fa-wallet"></i>
+            ডিপোজিট
+        </a>
+        <a href="history.html" class="btn-feature">
+            <i class="fas fa-history"></i>
+            হিস্টরি
+        </a>
+        <a href="news.html" class="btn-feature">
+            <i class="fas fa-newspaper"></i>
+            খবর
+        </a>
+        <a href="settings.html" class="btn-feature">
+            <i class="fas fa-cog"></i>
+            সেটিংস
+        </a>
+    </div>
+
+    <div class="telegram-join">
+        <p>আমাদের টেলিগ্রাম চ্যানেলে যুক্ত হন সকল আপডেট পেতে!</p>
+        <a href="https://t.me/yourtelegramchannel" target="_blank">টেলিগ্রামে জয়েন করুন</a>
+    </div>
+
+    <div class="bottom-navigation">
+        <a href="dashboard.html" class="nav-item active">
+            <i class="fas fa-home"></i>
+            <span>হোম</span>
+        </a>
+        <a href="premium.html" class="nav-item">
+            <i class="fas fa-crown"></i>
+            <span>প্রিমিয়াম</span>
+        </a>
+        <a href="wallet.html" class="nav-item">
+            <i class="fas fa-wallet"></i>
+            <span>ওয়ালেট</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <i class="fas fa-user-circle"></i>
+            <span>প্রোফাইল</span>
+        </a>
+    </div>
+
+    <script type="module">
+        // Firebase কনফিগারেশন - আপনার Firebase প্রোজেক্ট থেকে হুবহু কপি করে এখানে বসাবেন
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyA0nwj-qooOderNiLvmILB-gIPouy2HG4c",
+          authDomain: "takagorbd.firebaseapp.com",
+          databaseURL: "https://takagorbd-default-rtdb.asia-southeast1.firebasedatabase.app",
+          projectId: "takagorbd",
+          storageBucket: "takagorbd.firebasestorage.app",
+          messagingSenderId: "531548262665",
+          appId: "1:531548262665:web:85fb34ea635dae7ddc43d8",
+          measurementId: "G-TZB0NHKYGY"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+        let currentUser = null; // বর্তমান ইউজার ট্র্যাক করার জন্য
+
+        // DOM Element References
+        const dailySpinPopup = document.getElementById('dailySpinPopup');
+        const goToSpinPageBtn = document.getElementById('goToSpinPageBtn');
+        const closeSpinPopupBtn = document.getElementById('closeSpinPopup');
+        
+        const vipBadge = document.getElementById('vipBadge'); // VIP ব্যাজ এলিমেন্ট
+        const verifiedTick = document.getElementById('verifiedTick'); // ব্লু টিক এলিমেন্ট
+
+        const userNameElement = document.getElementById('userName'); // ইউজারের নাম এলিমেন্ট
+        const mainBalanceElement = document.getElementById('mainBalance'); // ব্যালেন্স এলিমেন্ট
+        const referralBalanceElement = document.getElementById('referralBalance'); // রেফারেল ব্যালেন্স এলিমেন্ট
+        const referralLinkInputElement = document.getElementById('referralLinkInput'); // রেফারেল লিংক ইনপুট
+
+        const freeIdActivationSection = document.getElementById('freeIdActivationSection');
+        const activateFreeIdBtn = document.getElementById('activateFreeIdBtn');
+
+        const freePremiumTrialSection = document.getElementById('freePremiumTrialSection');
+        const claimFreePremiumTrialBtn = document.getElementById('claimFreePremiumTrialBtn');
+
+
+        // Function to check if 24 hours have passed since last spin
+        function shouldShowSpinPopup() {
+            const lastSpinTime = localStorage.getItem('lastSpinCompletedTime');
+            const today = new Date().toDateString();
+
+            if (!lastSpinTime) {
+                return true;
+            }
+
+            const lastSpinDate = new Date(parseInt(lastSpinTime)).toDateString();
+            if (lastSpinDate !== today) {
+                return true;
+            }
+            return false;
+        }
+
+        // Function to display spin popup
+        function showSpinPopup() {
+            if (dailySpinPopup) dailySpinPopup.style.display = 'flex';
+        }
+
+        // Function to hide spin popup
+        function hideSpinPopup() {
+            if (dailySpinPopup) dailySpinPopup.style.display = 'none';
+        }
+
+        // Event listener for 'Go to Spin Page' button
+        if (goToSpinPageBtn) {
+            goToSpinPageBtn.addEventListener('click', () => {
+                localStorage.setItem('lastSpinCompletedTime', Date.now().toString());
+                window.location.href = 'spin_section_new.html'; // স্পিন পেজে নিয়ে যাওয়া
+                hideSpinPopup(); // পপআপ লুকানো
+            });
+        }
+
+        // Event listener for closing spin popup (user chooses to ignore)
+        if (closeSpinPopupBtn) {
+            closeSpinPopupBtn.addEventListener('click', () => {
+                hideSpinPopup();
+            });
+        }
+
+        // ফ্রি আইডি অ্যাক্টিভেট করার ফাংশন
+        async function activateFreeId() {
+            if (!currentUser) {
+                alert('লগইন করুন।');
+                return;
+            }
+
+            const userRef = ref(database, `users/${currentUser.uid}`);
+            try {
+                // Ensure isActive is correctly updated in Firebase
+                await update(userRef, { isActive: true });
+                alert('আপনার আইডি সফলভাবে অ্যাক্টিভেট হয়েছে!');
+                location.reload(); // UI আপডেট করার জন্য পেজ রিলোড করুন
+            } catch (error) {
+                console.error("আইডি অ্যাক্টিভেট করতে সমস্যা:", error);
+                alert('আইডি অ্যাক্টিভেট করার সময় একটি সমস্যা হয়েছে: ' + error.message);
+            }
+        }
+
+        // ফ্রি প্রিমিয়াম ট্রায়াল ক্লেম করার ফাংশন
+        async function claimFreePremiumTrial() {
+            if (!currentUser) {
+                alert('লগইন করুন।');
+                return;
+            }
+
+            const userRef = ref(database, `users/${currentUser.uid}`);
+            try {
+                const snapshot = await get(userRef);
+                const userData = snapshot.val();
+
+                if (!userData || !userData.isActive) {
+                    alert('প্রিমিয়াম ট্রায়াল নিতে হলে আপনাকে প্রথমে আইডি অ্যাক্টিভেট করতে হবে।');
+                    return;
+                }
+                if (userData.freeTrialClaimed) {
+                    alert('আপনি ইতিমধ্যেই আপনার ফ্রি প্রিমিয়াম ট্রায়াল ক্লেম করেছেন।');
+                    return;
+                }
+                if (userData.premiumPlan && userData.premiumEndDate > Date.now()) {
+                    alert('আপনার ইতিমধ্যেই একটি সক্রিয় প্রিমিয়াম প্ল্যান আছে।');
+                    return;
+                }
+
+                // ১ সপ্তাহের মেয়াদ সেট করুন
+                const now = Date.now();
+                const oneWeekInMs = 7 * 24 * 60 * 60 * 1000;
+                const premiumEndDate = now + oneWeekInMs;
+
+                const updates = {
+                    premiumPlan: 'free_trial',
+                    premiumStartDate: now,
+                    premiumEndDate: premiumEndDate,
+                    freeTrialClaimed: true // মার্ক করুন যে ফ্রি ট্রায়াল ক্লেম করা হয়েছে
+                };
+
+                await update(userRef, updates);
+                alert('১ সপ্তাহের ফ্রি প্রিমিয়াম ট্রায়াল সফলভাবে সক্রিয় হয়েছে!');
+                location.reload(); // UI আপডেট করার জন্য পেজ রিলোড করুন
+            } catch (error) {
+                console.error("ফ্রি প্রিমিয়াম ট্রায়াল সক্রিয় করতে সমস্যা:", error);
+                alert('ফ্রি প্রিমিয়াম ট্রায়াল সক্রিয় করার সময় একটি সমস্যা হয়েছে: ' + error.message);
+            }
+        }
+
+        // বাটন ক্লিক ইভেন্ট লিসেনার ইনিশিয়ালাইজেশন (শুধুমাত্র যদি এলিমেন্টগুলো থাকে)
+        if (activateFreeIdBtn) activateFreeIdBtn.addEventListener('click', activateFreeId);
+        if (claimFreePremiumTrialBtn) claimFreePremiumTrialBtn.addEventListener('click', claimFreePremiumTrial);
+
+
+        // লগইন চেক করা এবং ড্যাশবোর্ড লোড করা
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user; // Set current user
+                console.log("ইউজার লগইন করা আছে:", user.email, "UID:", user.uid);
+
+                const userId = user.uid;
+                const userRef = ref(database, 'users/' + userId);
+
+                try {
+                    const snapshot = await get(userRef);
+                    let userData = snapshot.val();
+
+                    if (snapshot.exists() && userData) { // Ensure userData is not null/undefined
+                        console.log("ইউজার ডাটা লোড হয়েছে:", userData);
+
+                        // ইউজার নাম আপডেট
+                        if (userNameElement) {
+                           userNameElement.firstChild.textContent = userData.name || user.email.split('@')[0];
+                        }
+
+                        // প্রোফাইল ছবি আপডেট (যদি থাকে)
+                        const userProfilePic = document.getElementById('userProfilePic');
+                        const profileIconDiv = userProfilePic ? userProfilePic.parentNode : null;
+
+                        if (userProfilePic && profileIconDiv) {
+                            if (userData.profilePic) {
+                                userProfilePic.src = userData.profilePic;
+                                userProfilePic.style.display = 'block';
+                                profileIconDiv.innerHTML = '';
+                                profileIconDiv.appendChild(userProfilePic);
+                            } else {
+                                userProfilePic.style.display = 'none';
+                                profileIconDiv.innerHTML = '<i class="fas fa-user" style="color: white;"></i>';
+                                profileIconDiv.style.backgroundColor = '#ccc';
+                            }
+                        }
+
+                        // ব্যালেন্স আপডেট
+                        if (mainBalanceElement) mainBalanceElement.textContent = `৳ ${parseFloat(userData.balance || 0).toFixed(2)}`;
+                        if (referralBalanceElement) referralBalanceElement.textContent = `৳ ${parseFloat(userData.referralBalance || 0).toFixed(2)}`;
+
+                        // রেফারেল লিংক আপডেট (যদি থাকে)
+                        if (referralLinkInputElement && userData.referralCode) {
+                            referralLinkInputElement.value = `https://takagorbd.com/join?ref=${userData.referralCode}`;
+                        }
+                        
+                        // **** মূল লজিক: আইডি অ্যাক্টিভেশন এবং প্রিমিয়াম ট্রায়াল ****
+                        // প্রথমে প্রিমিয়াম মেয়াদ শেষ হয়েছে কিনা চেক করে ডেটাবেস আপডেট করুন
+                        if (userData.premiumPlan && userData.premiumEndDate && userData.premiumEndDate <= Date.now()) {
+                            console.log(`প্রিমিয়াম প্ল্যান ${userData.premiumPlan} এর মেয়াদ শেষ হয়েছে। রিসেট করা হচ্ছে।`);
+                            await update(userRef, { premiumPlan: '', premiumStartDate: null, premiumEndDate: null });
+                            // ডেটাবেস আপডেট হওয়ার পর userData অবজেক্টও আপডেট করুন
+                            userData.premiumPlan = '';
+                            userData.premiumStartDate = null;
+                            userData.premiumEndDate = null;
+                        }
+
+                        // এরপর ব্যাজ এবং সেকশনগুলো ম্যানেজ করুন
+                        if (vipBadge && verifiedTick && freeIdActivationSection && freePremiumTrialSection) { // Ensure all elements exist
+                            if (userData.premiumPlan && userData.premiumEndDate && userData.premiumEndDate > Date.now()) {
+                                // ইউজার VIP (পেড বা ফ্রি ট্রায়াল উভয়ই)
+                                vipBadge.style.display = 'inline-block';
+                                verifiedTick.style.display = 'none'; // VIP থাকলে ব্লু টিক লুকানো
+
+                                freeIdActivationSection.style.display = 'none'; // এই সেকশন লুকানো
+                                freePremiumTrialSection.style.display = 'none'; // এই সেকশন লুকানো
+
+                            } else {
+                                // ইউজার প্রিমিয়াম নয় (বা মেয়াদ শেষ)
+                                vipBadge.style.display = 'none'; // VIP ব্যাজ লুকানো
+                                
+                                if (!userData.isActive) {
+                                    // যদি আইডি অ্যাক্টিভ না থাকে, আইডি অ্যাক্টিভেশন সেকশন দেখাও
+                                    freeIdActivationSection.style.display = 'block';
+                                    if (activateFreeIdBtn) activateFreeIdBtn.disabled = false;
+                                    freePremiumTrialSection.style.display = 'none'; // প্রিমিয়াম ট্রায়াল সেকশন লুকানো
+                                    verifiedTick.style.display = 'none'; // অ্যাক্টিভ না হলে ব্লু টিক লুকানো
+
+                                } else {
+                                    // আইডি অ্যাক্টিভ থাকলে
+                                    freeIdActivationSection.style.display = 'none'; // আইডি অ্যাক্টিভেশন সেকশন লুকানো
+                                    verifiedTick.style.display = 'inline-block'; // ব্লু টিক দেখাও (কারণ isActive)
+
+                                    if (!userData.freeTrialClaimed) {
+                                        // আইডি অ্যাক্টিভ কিন্তু ফ্রি ট্রায়াল ক্লেম করেনি, ফ্রি প্রিমিয়াম ট্রায়াল সেকশন দেখাও
+                                        freePremiumTrialSection.style.display = 'block';
+                                        if (claimFreePremiumTrialBtn) claimFreePremiumTrialBtn.disabled = false;
+
+                                    } else {
+                                        // আইডি অ্যাক্টিভ এবং ফ্রি ট্রায়াল ক্লেম করা হয়েছে (বা প্রিমিয়াম মেয়াদ শেষ)
+                                        freePremiumTrialSection.style.display = 'none'; // ফ্রি প্রিমিয়াম ট্রায়াল সেকশন লুকানো
+                                        // এখানে ইউজারকে "প্রিমিয়াম প্ল্যান কিনুন" টাইপের কিছু দেখানো যেতে পারে যদি আপনি চান
+                                    }
+                                }
+                            }
+                        } else {
+                             console.warn("কিছু UI এলিমেন্ট পাওয়া যায়নি। নিশ্চিত করুন তাদের ID ঠিক আছে।");
+                        }
+                        
+                        // Daily Spin Popup Logic after user data is loaded
+                        // স্পিন পপআপ শুধু অ্যাক্টিভ ইউজারদের জন্য দেখাবে
+                        if (dailySpinPopup && userData.isActive && shouldShowSpinPopup()) {
+                            showSpinPopup();
+                        } else {
+                            hideSpinPopup(); // যদি অ্যাক্টিভ না হয় বা স্পিন করার সময় না হয়, পপআপ লুকানো
+                        }
+
+                    } else {
+                        // ইউজারের জন্য কোন ডাটা পাওয়া যায়নি বা snapshot.exists() false
+                        console.log("ইউজারের জন্য কোন ডাটা পাওয়া যায়নি অথবা userData অবজেক্ট খালি।");
+                        if (userNameElement) userNameElement.firstChild.textContent = user.email.split('@')[0];
+                        
+                        // নতুন ইউজার বা ডেটা না থাকলে, সরাসরি আইডি অ্যাক্টিভেশন অপশন দেখাও
+                        if (freeIdActivationSection && activateFreeIdBtn) {
+                            freeIdActivationSection.style.display = 'block';
+                            activateFreeIdBtn.disabled = false;
+                        }
+                        // বাকি সব লুকানো
+                        if (vipBadge) vipBadge.style.display = 'none';
+                        if (verifiedTick) verifiedTick.style.display = 'none';
+                        if (freePremiumTrialSection) freePremiumTrialSection.style.display = 'none';
+                        hideSpinPopup(); // স্পিন পপআপ লুকানো
+                    }
+                } catch (error) {
+                    console.error("Firebase থেকে ডেটা লোড করতে সমস্যা:", error);
+                    // এরর হলেও আইডি অ্যাক্টিভেশন অপশন দেখাও, ধরে নিচ্ছি এটি প্রাথমিক ধাপ
+                    if (userNameElement) userNameElement.firstChild.textContent = user.email.split('@')[0];
+                    if (freeIdActivationSection && activateFreeIdBtn) {
+                        freeIdActivationSection.style.display = 'block';
+                        activateFreeIdBtn.disabled = false;
+                    }
+                    // বাকি সব লুকানো
+                    if (vipBadge) vipBadge.style.display = 'none';
+                    if (verifiedTick) verifiedTick.style.display = 'none';
+                    if (freePremiumTrialSection) freePremiumTrialSection.style.display = 'none';
+                    hideSpinPopup(); // স্পিন পপআপ লুকানো
+                }
+
+            } else {
+                // ইউজার লগইন করা নেই, লগইন পেজে রিডাইরেক্ট করুন
+                console.log("ইউজার লগইন করা নেই। লগইন পেজে রিডাইরেক্ট করা হচ্ছে।");
+                window.location.href = 'login.html'; // আপনার লগইন পেজের ফাইল নাম
+            }
+        });
+
+        // রেফারেল লিংক কপি ফাংশন
+        function copyReferralLink() {
+            const referralLinkInput = document.getElementById('referralLinkInput');
+            if (referralLinkInput) { // Check if element exists
+                referralLinkInput.select();
+                referralLinkInput.setSelectionRange(0, 99999); // মোবাইল ডিভাইসের জন্য
+                document.execCommand('copy');
+                alert('রেফারেল লিংক কপি করা হয়েছে!');
+            }
+        }
+
+        // গ্লোবাল ফাংশন হিসেবে উপলব্ধ করা (অন্য কোথাও থেকে কল করার জন্য)
+        window.copyReferralLink = copyReferralLink;
+
+        // ইমেজ স্লাইডার ডেটা
+        const sliderImages = [
+            "https://via.placeholder.com/120x80/FF0000/FFFFFF?text=Ad+1",
+            "https://via.placeholder.com/120x80/0000FF/FFFFFF?text=Ad+2", // উদাহরণ: ভিন্ন রঙ
+            "https://via.placeholder.com/120x80/008000/FFFFFF?text=Ad+3", // উদাহরণ: ভিন্ন রঙ
+            "https://via.placeholder.com/120x80/FF0000/FFFFFF?text=Ad+4",
+            "https://via.placeholder.com/120x80/0000FF/FFFFFF?text=Ad+5",
+            // আরও ছবি যোগ করতে পারেন
+        ];
+
+        const imageSliderWrapper = document.getElementById('imageSliderWrapper');
+
+        // স্লাইডারে ছবি লোড করা
+        if (imageSliderWrapper) { // Check if element exists
+            sliderImages.forEach(src => {
+                const sliderItem = document.createElement('div');
+                sliderItem.classList.add('slider-item');
+                const img = document.createElement('img');
+                img.src = src;
+                img.alt = "Slider Image";
+                sliderItem.appendChild(img);
+                imageSliderWrapper.appendChild(sliderItem);
+            });
+
+            // অ্যানিমেশন লুপ করার জন্য ছবিগুলো আবার যোগ করা (ডান থেকে বামে নিরবিচ্ছিন্ন স্ক্রল করার জন্য)
+            sliderImages.forEach(src => {
+                const sliderItem = document.createElement('div');
+                sliderItem.classList.add('slider-item');
+                const img = document.createElement('img');
+                img.src = src;
+                img.alt = "Slider Image";
+                sliderItem.appendChild(img);
+                imageSliderWrapper.appendChild(sliderItem);
+            });
+        }
+    </script>
+</body>
+</html>

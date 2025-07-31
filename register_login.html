@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>রেজিস্ট্রেশন/লগইন - Taka Gor BD</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-red: #FF0000;
+            --secondary-white: #FFFFFF;
+            --text-dark: #333;
+            --text-light: #eee;
+            --border-light: #ddd;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f6;
+            color: var(--text-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .auth-container {
+            background-color: var(--secondary-white);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: var(--box-shadow);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .auth-container h2 {
+            color: var(--primary-red);
+            margin-bottom: 25px;
+            font-size: 28px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 12px 15px;
+            border: none;
+            background-color: #f0f0f0;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            color: #777;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            border-radius: 5px 5px 0 0;
+        }
+
+        .tab-button.active {
+            background-color: var(--primary-red);
+            color: var(--secondary-white);
+            border-bottom: 2px solid var(--primary-red);
+        }
+
+        .tab-button:hover:not(.active) {
+            background-color: #e0e0e0;
+        }
+
+        .auth-form {
+            display: none; /* Initially hidden */
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--text-dark);
+        }
+
+        .input-group input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid var(--border-light);
+            border-radius: 5px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary-red);
+        }
+
+        .auth-button {
+            background-color: var(--primary-red);
+            color: var(--secondary-white);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            width: 100%;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-top: 15px;
+        }
+
+        .auth-button:hover {
+            background-color: #c00;
+            transform: translateY(-2px);
+        }
+
+        .error-message {
+            color: var(--primary-red);
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .success-message {
+            color: #008000; /* Green color */
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .loading-spinner {
+            display: none;
+            margin: 20px auto 0;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: var(--primary-red);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .auth-container {
+                padding: 20px;
+            }
+            .auth-container h2 {
+                font-size: 24px;
+            }
+            .tab-button {
+                font-size: 14px;
+                padding: 10px 12px;
+            }
+            .input-group input {
+                font-size: 14px;
+            }
+            .auth-button {
+                font-size: 16px;
+                padding: 10px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <h2>Taka Gor BD</h2>
+
+        <div class="tab-buttons">
+            <button class="tab-button active" id="loginTab">লগইন</button>
+            <button class="tab-button" id="registerTab">রেজিস্টার</button>
+        </div>
+
+        <form id="loginForm" class="auth-form active">
+            <div class="input-group">
+                <label for="loginEmail">ইমেইল:</label>
+                <input type="email" id="loginEmail" placeholder="আপনার ইমেইল দিন" required>
+            </div>
+            <div class="input-group">
+                <label for="loginPassword">পাসওয়ার্ড:</label>
+                <input type="password" id="loginPassword" placeholder="আপনার পাসওয়ার্ড দিন" required>
+            </div>
+            <p class="error-message" id="loginError"></p>
+            <button type="submit" class="auth-button" id="loginBtn">লগইন করুন</button>
+            <div class="loading-spinner" id="loginSpinner"></div>
+        </form>
+
+        <form id="registerForm" class="auth-form">
+            <div class="input-group">
+                <label for="registerName">পুরো নাম:</label>
+                <input type="text" id="registerName" placeholder="আপনার পুরো নাম দিন" required>
+            </div>
+            <div class="input-group">
+                <label for="registerEmail">ইমেইল:</label>
+                <input type="email" id="registerEmail" placeholder="আপনার ইমেইল দিন" required>
+            </div>
+            <div class="input-group">
+                <label for="registerPassword">পাসওয়ার্ড:</label>
+                <input type="password" id="registerPassword" placeholder="কমপক্ষে ৬ অক্ষরের পাসওয়ার্ড দিন" required>
+            </div>
+            <div class="input-group">
+                <label for="confirmPassword">পাসওয়ার্ড নিশ্চিত করুন:</label>
+                <input type="password" id="confirmPassword" placeholder="পাসওয়ার্ড পুনরায় দিন" required>
+            </div>
+            <div class="input-group">
+                <label for="referralCode">রেফারেল কোড (ঐচ্ছিক):</label>
+                <input type="text" id="referralCode" placeholder="যদি থাকে">
+            </div>
+            <p class="error-message" id="registerError"></p>
+            <p class="success-message" id="registerSuccess"></p>
+            <button type="submit" class="auth-button" id="registerBtn">রেজিস্টার করুন</button>
+            <div class="loading-spinner" id="registerSpinner"></div>
+        </form>
+    </div>
+
+    <script type="module">
+        // Firebase কনফিগারেশন - আপনার Firebase প্রোজেক্ট থেকে হুবহু কপি করে এখানে বসাবেন
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getDatabase, ref, set, get, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyA0nwj-qooOderNiLvmILB-gIPouy2HG4c",
+          authDomain: "takagorbd.firebaseapp.com",
+          databaseURL: "https://takagorbd-default-rtdb.asia-southeast1.firebasedatabase.app",
+          projectId: "takagorbd",
+          storageBucket: "takagorbd.firebasestorage.app",
+          messagingSenderId: "531548262665",
+          appId: "1:531548262665:web:85fb34ea635dae7ddc43d8",
+          measurementId: "G-TZB0NHKYGY"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        // DOM Elements
+        const loginTab = document.getElementById('loginTab');
+        const registerTab = document.getElementById('registerTab');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+
+        const loginEmail = document.getElementById('loginEmail');
+        const loginPassword = document.getElementById('loginPassword');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginError = document.getElementById('loginError');
+        const loginSpinner = document.getElementById('loginSpinner');
+
+        const registerName = document.getElementById('registerName');
+        const registerEmail = document.getElementById('registerEmail');
+        const registerPassword = document.getElementById('registerPassword');
+        const confirmPassword = document.getElementById('confirmPassword');
+        const referralCodeInput = document.getElementById('referralCode'); // রেফারেল কোড ইনপুট
+        const registerBtn = document.getElementById('registerBtn');
+        const registerError = document.getElementById('registerError');
+        const registerSuccess = document.getElementById('registerSuccess');
+        const registerSpinner = document.getElementById('registerSpinner');
+
+        // Tab Switching Logic
+        loginTab.addEventListener('click', () => {
+            loginTab.classList.add('active');
+            registerTab.classList.remove('active');
+            loginForm.classList.add('active');
+            registerForm.classList.remove('active');
+            loginError.style.display = 'none'; // Clear errors
+            registerError.style.display = 'none';
+            registerSuccess.style.display = 'none';
+        });
+
+        registerTab.addEventListener('click', () => {
+            registerTab.classList.add('active');
+            loginTab.classList.remove('active');
+            registerForm.classList.add('active');
+            loginForm.classList.remove('active');
+            loginError.style.display = 'none'; // Clear errors
+            registerError.style.display = 'none';
+            registerSuccess.style.display = 'none';
+        });
+
+        // Generate a simple unique referral code
+        function generateReferralCode() {
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = '';
+            const length = 7;
+            for (let i = 0; i < length; i++) {
+                result += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+            return result;
+        }
+
+        // --- Registration Logic ---
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            registerError.style.display = 'none';
+            registerSuccess.style.display = 'none';
+            registerBtn.disabled = true;
+            registerSpinner.style.display = 'block';
+
+            const name = registerName.value.trim();
+            const email = registerEmail.value.trim();
+            const password = registerPassword.value.trim();
+            const confirmPass = confirmPassword.value.trim();
+            const referralCode = referralCodeInput.value.trim();
+
+            if (password !== confirmPass) {
+                registerError.textContent = 'পাসওয়ার্ড মেলেনি।';
+                registerError.style.display = 'block';
+                registerBtn.disabled = false;
+                registerSpinner.style.display = 'none';
+                return;
+            }
+
+            if (password.length < 6) {
+                registerError.textContent = 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।';
+                registerError.style.display = 'block';
+                registerBtn.disabled = false;
+                registerSpinner.style.display = 'none';
+                return;
+            }
+
+            try {
+                // 1. Create user with Email and Password
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                // 2. Update user profile (display name)
+                await updateProfile(user, {
+                    displayName: name
+                });
+
+                // 3. Generate a unique referral code for the new user
+                const userReferralCode = generateReferralCode();
+                
+                // Check if provided referral code is valid
+                let referredBy = null;
+                if (referralCode) {
+                    const referralSnapshot = await get(ref(database, `referralCodes/${referralCode}`));
+                    if (referralSnapshot.exists()) {
+                        referredBy = referralSnapshot.val().userId;
+                    } else {
+                        console.warn("প্রদত্ত রেফারেল কোডটি বৈধ নয়।");
+                        // Optionally, you can alert the user here, but we'll proceed with registration.
+                    }
+                }
+
+                // 4. Save user data to Realtime Database
+                await set(ref(database, `users/${user.uid}`), {
+                    uid: user.uid,
+                    name: name,
+                    email: email,
+                    balance: 0.00,
+                    referralBalance: 0.00,
+                    isActive: false, // Default: Not active
+                    premiumPlan: '', // Default: No premium
+                    premiumStartDate: null,
+                    premiumEndDate: null,
+                    freeTrialClaimed: false,
+                    referralCode: userReferralCode, // Store generated referral code
+                    referredBy: referredBy, // Store UID of referrer if valid
+                    createdAt: Date.now()
+                });
+
+                // 5. Store the user's UID under their referral code
+                await set(ref(database, `referralCodes/${userReferralCode}`), {
+                    userId: user.uid
+                });
+
+                // 6. If referred by someone, give referral bonus (example: 10 BDT)
+                if (referredBy) {
+                    const referrerRef = ref(database, `users/${referredBy}`);
+                    const referrerSnapshot = await get(referrerRef);
+                    if (referrerSnapshot.exists()) {
+                        const referrerData = referrerSnapshot.val();
+                        const newReferralBalance = (parseFloat(referrerData.referralBalance || 0) + 10.00).toFixed(2);
+                        const newMainBalance = (parseFloat(referrerData.balance || 0) + 5.00).toFixed(2); // Example: 5 BDT to main balance
+                        await update(referrerRef, { 
+                            referralBalance: newReferralBalance,
+                            balance: newMainBalance // Optionally give some to main balance
+                        });
+                        console.log(`Referral bonus given to ${referredBy}`);
+                    }
+                }
+
+
+                registerSuccess.textContent = 'রেজিস্ট্রেশন সফল হয়েছে! এখন লগইন করুন।';
+                registerSuccess.style.display = 'block';
+                registerError.style.display = 'none';
+                registerForm.reset(); // Clear form
+                // Switch to login tab after successful registration
+                loginTab.click();
+
+            } catch (error) {
+                console.error("রেজিস্ট্রেশন ত্রুটি:", error);
+                let errorMessage = 'রেজিস্ট্রেশন ব্যর্থ হয়েছে।';
+                if (error.code === 'auth/email-already-in-use') {
+                    errorMessage = 'এই ইমেইলটি ইতিমধ্যেই ব্যবহৃত হয়েছে।';
+                } else if (error.code === 'auth/weak-password') {
+                    errorMessage = 'পাসওয়ার্ড খুব দুর্বল।';
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = 'অবৈধ ইমেইল অ্যাড্রেস।';
+                }
+                registerError.textContent = errorMessage;
+                registerError.style.display = 'block';
+            } finally {
+                registerBtn.disabled = false;
+                registerSpinner.style.display = 'none';
+            }
+        });
+
+        // --- Login Logic ---
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            loginError.style.display = 'none';
+            loginBtn.disabled = true;
+            loginSpinner.style.display = 'block';
+
+            const email = loginEmail.value.trim();
+            const password = loginPassword.value.trim();
+
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                // User logged in successfully, redirect to dashboard
+                console.log("লগইন সফল! ইউজার:", userCredential.user.email);
+                window.location.href = 'dashboard.html'; // ড্যাশবোর্ড পেজে রিডাইরেক্ট করুন
+
+            } catch (error) {
+                console.error("লগইন ত্রুটি:", error);
+                let errorMessage = 'লগইন ব্যর্থ হয়েছে।';
+                if (error.code === 'auth/invalid-credential') {
+                    errorMessage = 'ভুল ইমেইল বা পাসওয়ার্ড।';
+                } else if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                    errorMessage = 'ভুল ইমেইল বা পাসওয়ার্ড।'; // Common message for security
+                }
+                loginError.textContent = errorMessage;
+                loginError.style.display = 'block';
+            } finally {
+                loginBtn.disabled = false;
+                loginSpinner.style.display = 'none';
+            }
+        });
+
+        // Check auth state on page load (if already logged in, redirect to dashboard)
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                console.log("ইউজার ইতিমধ্যেই লগইন করা আছে, ড্যাশবোর্ডে রিডাইরেক্ট করা হচ্ছে।");
+                window.location.href = 'dashboard.html';
+            }
+        });
+    </script>
+</body>
+</html>

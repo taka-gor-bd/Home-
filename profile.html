@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>প্রোফাইল - Taka Gor BD</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* আপনার প্রধান CSS কোড এখানে পেস্ট করুন, অথবা একটি ফাইল থেকে লিংক করুন */
+        :root {
+            --primary-red: #FF0000;
+            --secondary-white: #FFFFFF;
+            --text-dark: #333;
+            --text-light: #eee;
+            --border-light: #ddd;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f6;
+            color: var(--text-dark);
+            overflow-x: hidden;
+            padding-bottom: 70px; /* নেভিগেশন বারের জন্য নিচ থেকে প্যাডিং */
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* হেডার */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: var(--primary-red);
+            color: var(--secondary-white);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .header .logout-button {
+            background-color: transparent;
+            border: 1px solid var(--secondary-white);
+            color: var(--secondary-white);
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .header .logout-button:hover {
+            background-color: var(--secondary-white);
+            color: var(--primary-red);
+        }
+
+        /* প্রোফাইল কন্টেইনার */
+        .profile-container {
+            padding: 20px;
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-container h2 {
+            text-align: center;
+            color: var(--primary-red);
+            margin-bottom: 25px;
+            font-size: 24px;
+        }
+
+        .profile-info-box {
+            background-color: #f0f8ff; /* Light blue background */
+            border: 1px solid #cceeff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .profile-info-box h3 {
+            margin-top: 0;
+            color: var(--text-dark);
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        .profile-info-box .member-status {
+            font-weight: bold;
+            font-size: 16px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+        .member-status.premium {
+            background-color: #FFD700; /* Gold */
+            color: #333;
+        }
+
+        .member-status.vip {
+            background-color: #DAA520; /* Goldenrod */
+            color: #fff;
+        }
+
+        .member-status.regular {
+            background-color: #bbb;
+            color: #333;
+        }
+
+        .form-section h3 {
+            color: var(--primary-red);
+            margin-top: 25px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--text-dark);
+        }
+
+        .input-group input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid var(--border-light);
+            border-radius: 5px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary-red);
+        }
+
+        .save-button {
+            background-color: #008000; /* Green */
+            color: var(--secondary-white);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            width: 100%;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-top: 15px;
+        }
+
+        .save-button:hover {
+            background-color: #006400; /* Darker green */
+            transform: translateY(-2px);
+        }
+
+        .message {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading-spinner {
+            display: none;
+            margin: 20px auto 0;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: var(--primary-red);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* নেভিগেশন বার (ফুটারে) */
+        .bottom-navigation {
+            position: fixed; /* পার্মানেন্টলি স্ক্রিনে থাকবে */
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--secondary-white);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 1000;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #777;
+            font-size: 12px;
+            transition: color 0.3s ease;
+            flex: 1; /* প্রতিটি আইটেম সমান জায়গা নেবে */
+            min-width: 0; /* ফ্লেক্স আইটেম অতিরিক্ত চওড়া হওয়া এড়াতে */
+        }
+
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        .nav-item.active {
+            color: var(--primary-red);
+        }
+        .nav-item:hover {
+            color: var(--primary-red);
+        }
+
+        /* ছোট স্ক্রিনের জন্য */
+        @media (max-width: 480px) {
+            .profile-container {
+                margin: 15px;
+                padding: 15px;
+            }
+            .profile-container h2 {
+                font-size: 20px;
+            }
+            .profile-info-box h3 {
+                font-size: 20px;
+            }
+            .profile-info-box .member-status {
+                font-size: 14px;
+            }
+            .input-group label, .input-group input {
+                font-size: 14px;
+            }
+            .save-button {
+                font-size: 16px;
+                padding: 10px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">Taka Gor BD</div>
+        <button class="logout-button" id="logoutButton">লগআউট</button>
+    </div>
+
+    <div class="profile-container">
+        <h2>প্রোফাইল সেকশন</h2>
+
+        <div class="profile-info-box">
+            <h3 id="profileNameDisplay">লোডিং...</h3>
+            <span class="member-status" id="memberStatusDisplay"></span>
+        </div>
+
+        <div class="form-section">
+            <h3>তথ্য আপডেট করুন</h3>
+            <div class="input-group">
+                <label for="editName">নাম:</label>
+                <input type="text" id="editName" placeholder="আপনার পুরো নাম">
+            </div>
+            <div class="input-group">
+                <label for="editPhone">মোবাইল নম্বর:</label>
+                <input type="text" id="editPhone" placeholder="আপনার মোবাইল নম্বর" pattern="[0-9]{11}" title="১১ ডিজিটের মোবাইল নম্বর দিন" >
+            </div>
+            <button class="save-button" id="saveProfileButton">সেভ করুন</button>
+            <div class="loading-spinner" id="profileSpinner"></div>
+            <p class="message" id="profileMessage"></p>
+        </div>
+    </div>
+
+    <div class="bottom-navigation">
+        <a href="dashboard.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>হোম</span>
+        </a>
+        <a href="premium_tasks.html" class="nav-item">
+            <i class="fas fa-crown"></i>
+            <span>প্রিমিয়াম</span>
+        </a>
+        <a href="wallet.html" class="nav-item">
+            <i class="fas fa-wallet"></i>
+            <span>ওয়ালেট</span>
+        </a>
+        <a href="profile.html" class="nav-item active">
+            <i class="fas fa-user-circle"></i>
+            <span>প্রোফাইল</span>
+        </a>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA0nwj-qooOderNiLvmILB-gIPouy2HG4c",
+            authDomain: "takagorbd.firebaseapp.com",
+            databaseURL: "https://takagorbd-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "takagorbd",
+            storageBucket: "takagorbd.firebasestorage.app",
+            messagingSenderId: "531548262665",
+            appId: "1:531548262665:web:85fb34ea635dae7ddc43d8",
+            measurementId: "G-TZB0NHKYGY"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        // DOM Elements
+        const logoutButton = document.getElementById('logoutButton');
+        const profileNameDisplay = document.getElementById('profileNameDisplay');
+        const memberStatusDisplay = document.getElementById('memberStatusDisplay');
+        const editNameInput = document.getElementById('editName');
+        const editPhoneInput = document.getElementById('editPhone');
+        const saveProfileButton = document.getElementById('saveProfileButton');
+        const profileMessage = document.getElementById('profileMessage');
+        const profileSpinner = document.getElementById('profileSpinner');
+
+        let currentUser = null; // To store the current authenticated user
+
+        // --- Fetch and Display User Profile ---
+        async function fetchUserProfile() {
+            if (!currentUser) {
+                return; // No user logged in
+            }
+
+            profileSpinner.style.display = 'block';
+            profileMessage.style.display = 'none';
+
+            try {
+                const userRef = ref(database, `users/${currentUser.uid}`);
+                const snapshot = await get(userRef);
+
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                    const userName = userData.name || currentUser.displayName || 'ব্যবহারকারী';
+                    const userPhone = userData.phone || '';
+                    const premiumPlan = userData.premiumPlan || 'regular';
+                    const premiumEndDate = userData.premiumEndDate;
+
+                    profileNameDisplay.textContent = userName;
+                    editNameInput.value = userName;
+                    editPhoneInput.value = userPhone;
+
+                    // Determine and display member status
+                    let statusText = '';
+                    let statusClass = 'regular'; // Default
+
+                    if (premiumPlan === 'paid_premium' && premiumEndDate > Date.now()) {
+                        statusText = 'প্রিমিয়াম মেম্বার';
+                        statusClass = 'premium';
+                    } else if (premiumPlan === 'free_trial' && premiumEndDate > Date.now()) {
+                         statusText = 'ফ্রি ট্রায়াল মেম্বার';
+                         statusClass = 'premium'; // Or a different class if you have one for trial
+                    }
+                    else {
+                        statusText = 'সাধারণ মেম্বার';
+                        statusClass = 'regular';
+                    }
+                    memberStatusDisplay.textContent = statusText;
+                    memberStatusDisplay.className = `member-status ${statusClass}`;
+
+                } else {
+                    profileNameDisplay.textContent = 'তথ্য পাওয়া যায়নি';
+                    memberStatusDisplay.textContent = 'সাধারণ মেম্বার';
+                    memberStatusDisplay.className = `member-status regular`;
+                }
+            } catch (error) {
+                console.error("প্রোফাইল তথ্য লোড করতে সমস্যা:", error);
+                profileNameDisplay.textContent = 'তথ্য লোড করতে ব্যর্থ';
+                memberStatusDisplay.textContent = 'সাধারণ মেম্বার';
+                memberStatusDisplay.className = `member-status regular`;
+                showMessage('প্রোফাইল তথ্য লোড করতে সমস্যা হয়েছে।', 'error');
+            } finally {
+                profileSpinner.style.display = 'none';
+            }
+        }
+
+        // --- Save Profile Changes ---
+        saveProfileButton.addEventListener('click', async () => {
+            if (!currentUser) {
+                showMessage('প্রোফাইল আপডেট করতে লগইন করুন।', 'error');
+                return;
+            }
+
+            const newName = editNameInput.value.trim();
+            const newPhone = editPhoneInput.value.trim();
+
+            profileSpinner.style.display = 'block';
+            saveProfileButton.disabled = true;
+            profileMessage.style.display = 'none';
+
+            try {
+                // Update Firebase Authentication profile display name
+                if (currentUser.displayName !== newName) {
+                    await updateProfile(currentUser, { displayName: newName });
+                }
+
+                // Update Realtime Database user data
+                const userRef = ref(database, `users/${currentUser.uid}`);
+                await update(userRef, {
+                    name: newName,
+                    phone: newPhone
+                });
+
+                // Update UI after successful save
+                profileNameDisplay.textContent = newName;
+                showMessage('প্রোফাইল সফলভাবে আপডেট করা হয়েছে!', 'success');
+
+            } catch (error) {
+                console.error("প্রোফাইল সেভ করতে সমস্যা:", error);
+                showMessage('প্রোফাইল সেভ করতে সমস্যা হয়েছে: ' + error.message, 'error');
+            } finally {
+                profileSpinner.style.display = 'none';
+                saveProfileButton.disabled = false;
+            }
+        });
+
+        // --- Logout Functionality ---
+        logoutButton.addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+                // Redirect to login/registration page after logout
+                window.location.href = 'register_login.html'; // আপনার রেজিস্ট্রেশন/লগইন পেজের ফাইল নাম
+            } catch (error) {
+                console.error("লগআউট করতে সমস্যা:", error);
+                alert('লগআউট ব্যর্থ হয়েছে: ' + error.message);
+            }
+        });
+
+        // --- Message Display Helper ---
+        function showMessage(msg, type) {
+            profileMessage.textContent = msg;
+            profileMessage.className = `message ${type}`;
+            profileMessage.style.display = 'block';
+        }
+
+        // --- Authentication State Listener ---
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                fetchUserProfile(); // Fetch user data when logged in
+            } else {
+                // No user logged in, redirect to login page
+                console.log("ইউজার লগইন করা নেই, লগইন পেজে রিডাইরেক্ট করা হচ্ছে।");
+                window.location.href = 'register_login.html'; // আপনার রেজিস্ট্রেশন/লগইন পেজের ফাইল নাম
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>লটারি - Taka Gor BD</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* আপনার প্রধান CSS কোড এখানে পেস্ট করুন, অথবা একটি ফাইল থেকে লিংক করুন */
+        :root {
+            --primary-red: #FF0000;
+            --secondary-white: #FFFFFF;
+            --text-dark: #333;
+            --text-light: #eee;
+            --border-light: #ddd;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f6;
+            color: var(--text-dark);
+            overflow-x: hidden;
+            padding-bottom: 70px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* হেডার */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: var(--primary-red);
+            color: var(--secondary-white);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .header .notification-icon {
+            font-size: 24px;
+            color: var(--secondary-white);
+            text-decoration: none;
+            position: relative;
+        }
+
+        /* লটারি কন্টেইনার */
+        .lottery-container {
+            padding: 20px;
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .lottery-container h2 {
+            color: var(--primary-red);
+            margin-bottom: 25px;
+            font-size: 24px;
+        }
+
+        /* টাইমার সেকশন */
+        .timer-section {
+            background-color: #e0f2f7; /* Light blue background */
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        #lotteryTimer {
+            font-size: 3.5em; /* Large timer */
+            font-weight: bold;
+            color: var(--primary-red);
+            margin-bottom: 10px;
+        }
+        #winnerDisplay {
+            font-size: 2.5em; /* Large winner display */
+            font-weight: bold;
+            color: #008000; /* Green for winner */
+            margin-bottom: 10px;
+            display: none; /* Initially hidden */
+        }
+
+        #nextLotteryTime {
+            font-size: 1.1em;
+            color: #555;
+            margin-top: 10px;
+            display: none; /* Initially hidden */
+        }
+
+
+        /* স্ট্যাটাস ইনফো */
+        .lottery-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        .stat-card {
+            flex: 1;
+            background-color: #f0f0f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            color: #555;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-card strong {
+            display: block;
+            font-size: 1.5em;
+            color: var(--primary-red);
+            margin-top: 5px;
+        }
+
+        /* ইউজার ব্যালেন্স */
+        .user-balance-section {
+            background-color: #dcedc8; /* Light green */
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            color: #4CAF50;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        .user-balance-section strong {
+            color: var(--primary-red);
+        }
+
+        /* টিকিট কেনার সেকশন */
+        .buy-ticket-section {
+            background-color: #f7f7f7;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        .buy-ticket-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .ticket-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: center;
+            justify-content: center;
+        }
+        #ticketNumberDisplay {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1.2em;
+            text-align: center;
+            font-weight: bold;
+            background-color: #e9ecef; /* Readonly background */
+            cursor: not-allowed;
+            max-width: 150px; /* Limit width */
+        }
+        .refresh-button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+        .refresh-button:hover {
+            background-color: #0056b3;
+        }
+
+        .buy-now-button {
+            background-color: var(--primary-red);
+            color: #fff;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            width: 80%; /* Make it wider */
+            max-width: 250px;
+        }
+        .buy-now-button:hover {
+            background-color: #c00;
+        }
+        .buy-now-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            color: #666;
+        }
+
+        /* টিকিট হিস্টরি */
+        .ticket-history-section {
+            background-color: #f7f7f7;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            text-align: left;
+        }
+        .ticket-history-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 20px;
+            text-align: center;
+        }
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 1em;
+            color: #555;
+        }
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        .history-item .ticket-no {
+            font-weight: bold;
+            color: var(--primary-red);
+        }
+        .history-item .status {
+            font-weight: bold;
+        }
+        .history-item .status.pending { color: #f39c12; } /* Orange */
+        .history-item .status.won { color: #008000; } /* Green */
+        .history-item .status.lost { color: #888; } /* Gray */
+        .history-item .status.processing { color: #007bff; } /* Blue */
+
+
+        .message {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .message.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .loading-spinner {
+            display: none;
+            margin: 20px auto 0;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: var(--primary-red);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* নেভিগেশন বার (ফুটারে) */
+        .bottom-navigation {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--secondary-white);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 1000;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #777;
+            font-size: 12px;
+            transition: color 0.3s ease;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        .nav-item.active {
+            color: var(--primary-red);
+        }
+        .nav-item:hover {
+            color: var(--primary-red);
+        }
+
+        @media (max-width: 480px) {
+            .lottery-container {
+                margin: 15px;
+                padding: 15px;
+            }
+            .lottery-container h2 {
+                font-size: 20px;
+            }
+            #lotteryTimer, #winnerDisplay {
+                font-size: 2.5em;
+            }
+            .stat-card {
+                padding: 10px;
+                font-size: 0.9em;
+            }
+            .stat-card strong {
+                font-size: 1.2em;
+            }
+            .user-balance-section {
+                font-size: 1em;
+                padding: 10px;
+            }
+            .buy-ticket-section h3, .ticket-history-section h3 {
+                font-size: 18px;
+            }
+            #ticketNumberDisplay {
+                font-size: 1em;
+                padding: 8px;
+            }
+            .refresh-button, .buy-now-button {
+                font-size: 0.9em;
+                padding: 10px;
+            }
+            .history-item {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">Taka Gor BD</div>
+        <a href="notification.html" class="notification-icon">
+            <i class="fas fa-bell"></i>
+        </a>
+    </div>
+
+    <div class="lottery-container">
+        <h2>লটারি</h2>
+
+        <div class="timer-section">
+            <div id="lotteryTimer">লোডিং...</div>
+            <div id="winnerDisplay" style="display: none;"></div>
+            <div id="nextLotteryTime" style="display: none;"></div>
+        </div>
+
+        <div class="lottery-stats">
+            <div class="stat-card">
+                অংশগ্রহণকারী<br><strong id="participantsCount">0</strong>
+            </div>
+            <div class="stat-card">
+                সংগ্রহিত অর্থ<br><strong id="totalCollection">৳ 0.00</strong>
+            </div>
+        </div>
+
+        <div class="user-balance-section">
+            আপনার ব্যালেন্স: <strong id="userBalance">৳ 0.00</strong>
+        </div>
+
+        <div class="buy-ticket-section">
+            <h3>টিকিট কিনুন (৳100 / টিকিট)</h3>
+            <div class="ticket-input-group">
+                <input type="text" id="ticketNumberDisplay" value="XXXX" readonly>
+                <button id="refreshTicketBtn" class="refresh-button"><i class="fas fa-sync-alt"></i> রিফ্রেশ</button>
+            </div>
+            <button id="buyTicketBtn" class="buy-now-button">টিকিট কিনুন</button>
+            <p id="buyTicketMessage" class="message" style="margin-top:10px;"></p>
+        </div>
+
+        <div class="ticket-history-section">
+            <h3>আপনার কেনা টিকিটসমূহ</h3>
+            <div id="userTicketsHistory">
+                <p id="noTicketsMessage" style="text-align: center; color: #888;">কোনো টিকিট কেনা হয়নি।</p>
+            </div>
+        </div>
+        
+        <div id="mainSpinner" class="loading-spinner"></div>
+        <p id="errorMessage" class="message error"></p>
+    </div>
+
+    <div class="bottom-navigation">
+        <a href="dashboard.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>হোম</span>
+        </a>
+        <a href="premium_plans.html" class="nav-item">
+            <i class="fas fa-crown"></i>
+            <span>প্রিমিয়াম</span>
+        </a>
+        <a href="wallet.html" class="nav-item">
+            <i class="fas fa-wallet"></i>
+            <span>ওয়ালেট</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <i class="fas fa-user-circle"></i>
+            <span>প্রোফাইল</span>
+        </a>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getDatabase, ref, get, update, set, onValue, push, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+        // Firebase Configuration (আপনার সঠিক Firebase কনফিগারেশন দিন)
+        const firebaseConfig = {
+          apiKey: "AIzaSyA0nwj-qooOderNiLvmILB-gIPouy2HG4c",
+          authDomain: "takagorbd.firebaseapp.com",
+          databaseURL: "https://takagorbd-default-rtdb.asia-southeast1.firebasedatabase.app",
+          projectId: "takagorbd",
+          storageBucket: "takagorbd.firebasestorage.app",
+          messagingSenderId: "531548262665",
+          appId: "1:531548262665:web:85fb34ea635dae7ddc43d8",
+          measurementId: "G-TZB0NHKYGY"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        // DOM Elements
+        const lotteryTimerEl = document.getElementById('lotteryTimer');
+        const winnerDisplayEl = document.getElementById('winnerDisplay');
+        const nextLotteryTimeEl = document.getElementById('nextLotteryTime');
+        const participantsCountEl = document.getElementById('participantsCount');
+        const totalCollectionEl = document.getElementById('totalCollection');
+        const userBalanceEl = document.getElementById('userBalance');
+        const ticketNumberDisplayEl = document.getElementById('ticketNumberDisplay');
+        const refreshTicketBtn = document.getElementById('refreshTicketBtn');
+        const buyTicketBtn = document.getElementById('buyTicketBtn');
+        const buyTicketMessageEl = document.getElementById('buyTicketMessage');
+        const userTicketsHistoryEl = document.getElementById('userTicketsHistory');
+        const noTicketsMessageEl = document.getElementById('noTicketsMessage');
+        const mainSpinner = document.getElementById('mainSpinner');
+        const errorMessageEl = document.getElementById('errorMessage');
+
+        let currentUser = null;
+        let currentLottery = null; // Stores current lottery data from Firebase
+        let userCurrentBalance = 0;
+        const TICKET_PRICE = 100; // প্রতিটি টিকিটের মূল্য
+        const WINNER_DISPLAY_DURATION = 10 * 60 * 1000; // 10 মিনিট মিলিসেকেন্ডে
+
+        // --- Firebase ডেটাবেস পাথ ---
+        const LOTTERY_INFO_PATH = 'lottery/currentLottery';
+        const LOTTERY_TICKETS_PATH = 'lotteryTickets'; // All purchased tickets
+        const USERS_PATH = 'users';
+
+        // --- ফাংশন: র্যান্ডম টিকিট নম্বর জেনারেট করা (যেমন ৪-সংখ্যার) ---
+        function generateTicketNumber() {
+            return Math.floor(1000 + Math.random() * 9000).toString(); // 1000 থেকে 9999
+        }
+
+        // --- ফাংশন: ব্যালেন্স লোড করা ---
+        async function loadUserBalance() {
+            if (!currentUser) return;
+            try {
+                const userRef = ref(database, `${USERS_PATH}/${currentUser.uid}`);
+                const snapshot = await get(userRef);
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                    userCurrentBalance = userData.balance || 0;
+                    userBalanceEl.textContent = `৳ ${userCurrentBalance.toFixed(2)}`;
+                    // ব্যালেন্স পর্যাপ্ত না হলে "টিকিট কিনুন" বাটন নিষ্ক্রিয় করুন
+                    buyTicketBtn.disabled = userCurrentBalance < TICKET_PRICE;
+                    if (userCurrentBalance < TICKET_PRICE) {
+                        buyTicketMessageEl.textContent = 'আপনার ব্যালেন্সে পর্যাপ্ত টাকা নেই।';
+                        buyTicketMessageEl.className = 'message error';
+                        buyTicketMessageEl.style.display = 'block';
+                    } else {
+                        buyTicketMessageEl.style.display = 'none';
+                    }
+
+                } else {
+                    userBalanceEl.textContent = '৳ 0.00';
+                    buyTicketBtn.disabled = true;
+                    buyTicketMessageEl.textContent = 'ইউজার ডেটা লোড হয়নি।';
+                    buyTicketMessageEl.className = 'message error';
+                    buyTicketMessageEl.style.display = 'block';
+                }
+            } catch (error) {
+                console.error("ব্যালেন্স লোড করতে সমস্যা:", error);
+                showErrorMessage('ব্যালেন্স লোড করতে সমস্যা হয়েছে।');
+            }
+        }
+
+        // --- ফাংশন: বর্তমান লটারির তথ্য লোড করা এবং UI আপডেট করা ---
+        function setupLotteryListener() {
+            const lotteryRef = ref(database, LOTTERY_INFO_PATH);
+            onValue(lotteryRef, (snapshot) => {
+                currentLottery = snapshot.val();
+                if (currentLottery) {
+                    updateLotteryUI();
+                } else {
+                    lotteryTimerEl.textContent = 'লটারি লোড হচ্ছে...';
+                    showErrorMessage('লটারির তথ্য পাওয়া যায়নি।');
+                }
+                mainSpinner.style.display = 'none';
+            }, (error) => {
+                console.error("লটারি ডেটা লোড করতে সমস্যা:", error);
+                showErrorMessage('লটারি ডেটা লোড করতে সমস্যা হয়েছে।');
+                mainSpinner.style.display = 'none';
+            });
+        }
+
+        // --- ফাংশন: লটারির UI আপডেট করা ---
+        let countdownInterval;
+        function updateLotteryUI() {
+            if (!currentLottery) return;
+
+            const drawTime = currentLottery.drawTime;
+            const winner = currentLottery.winner || null;
+            const winnerAnnouncedAt = currentLottery.winnerAnnouncedAt || 0;
+            const now = Date.now();
+
+            participantsCountEl.textContent = currentLottery.participantsCount || 0;
+            totalCollectionEl.textContent = `৳ ${(currentLottery.totalCollection || 0).toFixed(2)}`;
+
+            clearInterval(countdownInterval); // পূর্ববর্তী ইন্টারভাল পরিষ্কার করুন
+
+            if (winner && (now - winnerAnnouncedAt < WINNER_DISPLAY_DURATION)) {
+                // বিজয়ী ঘোষণা চলমান
+                lotteryTimerEl.style.display = 'none';
+                winnerDisplayEl.style.display = 'block';
+                winnerDisplayEl.innerHTML = `বিজয়ী: <br> ${winner.name || winner.uid} <br> টিকেট: ${winner.ticketNumber}`;
+                nextLotteryTimeEl.style.display = 'block';
+                nextLotteryTimeEl.textContent = `পরবর্তী লটারি শুরু হবে ${Math.ceil((WINNER_DISPLAY_DURATION - (now - winnerAnnouncedAt)) / (60 * 1000))} মিনিট পর...`;
+                
+                // নির্দিষ্ট সময় পর বিজয়ী ডিসপ্লে সরিয়ে টাইমার ফিরিয়ে আনার জন্য সেট করুন
+                setTimeout(() => {
+                    lotteryTimerEl.style.display = 'block';
+                    winnerDisplayEl.style.display = 'none';
+                    nextLotteryTimeEl.style.display = 'none';
+                    updateLotteryUI(); // আবার UI আপডেট করুন যাতে টাইমার শুরু হয়
+                }, WINNER_DISPLAY_DURATION - (now - winnerAnnouncedAt));
+
+            } else {
+                // টাইমার চলছে অথবা পরবর্তী লটারির জন্য প্রস্তুত
+                lotteryTimerEl.style.display = 'block';
+                winnerDisplayEl.style.display = 'none';
+                nextLotteryTimeEl.style.display = 'none';
+
+                if (drawTime > now) {
+                    countdownInterval = setInterval(() => {
+                        const remainingTime = drawTime - Date.now();
+                        if (remainingTime <= 0) {
+                            clearInterval(countdownInterval);
+                            lotteryTimerEl.textContent = 'ড্র হচ্ছে...';
+                            // Cloud Function স্বয়ংক্রিয়ভাবে ড্র করবে
+                            return;
+                        }
+
+                        const totalSeconds = Math.floor(remainingTime / 1000);
+                        const hours = Math.floor(totalSeconds / 3600);
+                        const minutes = Math.floor((totalSeconds % 3600) / 60);
+                        const seconds = totalSeconds % 60;
+
+                        lotteryTimerEl.textContent = ` ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    }, 1000);
+                } else {
+                    lotteryTimerEl.textContent = 'ড্র হচ্ছে...'; // ড্র টাইম পার হয়ে গেলে
+                }
+            }
+        }
+
+        // --- ফাংশন: ইউজারদের টিকিট হিস্টরি লোড করা ---
+        function loadUserTicketsHistory() {
+            if (!currentUser) return;
+            const userTicketsRef = query(ref(database, LOTTERY_TICKETS_PATH), orderByChild('userId'), equalTo(currentUser.uid));
+
+            onValue(userTicketsRef, (snapshot) => {
+                const ticketsData = snapshot.val();
+                userTicketsHistoryEl.innerHTML = ''; // পূর্বের হিস্টরি পরিষ্কার করুন
+                let hasTickets = false;
+
+                if (ticketsData) {
+                    const sortedTickets = Object.values(ticketsData).sort((a, b) => b.purchaseTime - a.purchaseTime); // সর্বশেষ টিকিট উপরে
+                    sortedTickets.forEach(ticket => {
+                        hasTickets = true;
+                        const statusClass = ticket.status === 'won' ? 'won' : (ticket.status === 'lost' ? 'lost' : 'pending'); // 'processing' ও যোগ করতে পারেন
+                        const statusText = ticket.status === 'won' ? 'জয়ী!' : (ticket.status === 'lost' ? 'হারুনো' : (ticket.status === 'pending' ? 'প্রক্রিয়াধীন' : ticket.status));
+                        
+                        const purchaseDate = new Date(ticket.purchaseTime).toLocaleDateString('bn-BD', {
+                            year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                        });
+
+                        const historyItem = document.createElement('div');
+                        historyItem.classList.add('history-item');
+                        historyItem.innerHTML = `
+                            <span>টিকিট: <span class="ticket-no">${ticket.ticketNumber}</span></span>
+                            <span>মূল্য: ৳${TICKET_PRICE.toFixed(2)}</span>
+                            <span>${purchaseDate}</span>
+                            <span class="status ${statusClass}">${statusText}</span>
+                        `;
+                        userTicketsHistoryEl.appendChild(historyItem);
+                    });
+                }
+
+                if (!hasTickets) {
+                    userTicketsHistoryEl.appendChild(noTicketsMessageEl); // "কোনো টিকিট কেনা হয়নি" মেসেজ দেখান
+                    noTicketsMessageEl.style.display = 'block';
+                } else {
+                    noTicketsMessageEl.style.display = 'none';
+                }
+            }, (error) => {
+                console.error("টিকিট হিস্টরি লোড করতে সমস্যা:", error);
+                showErrorMessage('আপনার টিকিট হিস্টরি লোড করতে সমস্যা হয়েছে।');
+            });
+        }
+
+        // --- ইভেন্ট লিসেনার: টিকিট রিফ্রেশ করা ---
+        refreshTicketBtn.addEventListener('click', () => {
+            ticketNumberDisplayEl.value = generateTicketNumber();
+        });
+
+        // --- ইভেন্ট লিসেনার: টিকিট কেনা ---
+        buyTicketBtn.addEventListener('click', async () => {
+            if (!currentUser) {
+                alert('টিকিট কিনতে লগইন করুন।');
+                window.location.href = 'register_login.html';
+                return;
+            }
+
+            if (userCurrentBalance < TICKET_PRICE) {
+                showBuyTicketMessage('আপনার ব্যালেন্সে পর্যাপ্ত টাকা নেই।', 'error');
+                return;
+            }
+            if (!currentLottery || !currentLottery.lotteryId) {
+                 showBuyTicketMessage('লটারির তথ্য লোড হয়নি। দয়া করে একটু অপেক্ষা করুন।', 'error');
+                 return;
+            }
+            if (currentLottery.drawTime <= Date.now() + (30 * 1000)) { // ড্র টাইম খুব কাছাকাছি হলে টিকিট কেনা যাবে না (যেমন ৩০ সেকেন্ড)
+                showBuyTicketMessage('লটারি ড্র এর সময় খুব কাছাকাছি। পরের লটারির জন্য অপেক্ষা করুন।', 'error');
+                return;
+            }
+
+
+            buyTicketBtn.disabled = true;
+            refreshTicketBtn.disabled = true;
+            buyTicketBtn.textContent = 'কেনা হচ্ছে...';
+            showBuyTicketMessage('প্রক্রিয়া করা হচ্ছে...', 'info');
+
+            const ticketNumber = ticketNumberDisplayEl.value;
+            const userId = currentUser.uid;
+            const userName = currentUser.displayName || currentUser.email || 'Unknown User';
+
+            try {
+                // ইউজারের ব্যালেন্স আপডেট করুন
+                const userRef = ref(database, `${USERS_PATH}/${userId}`);
+                const userSnapshot = await get(userRef);
+                const userData = userSnapshot.val();
+                
+                if (!userData || userData.balance < TICKET_PRICE) {
+                    showBuyTicketMessage('ব্যালেন্স অপর্যাপ্ত।', 'error');
+                    return;
+                }
+                const newBalance = userData.balance - TICKET_PRICE;
+                await update(userRef, { balance: newBalance });
+                userCurrentBalance = newBalance; // লোকাল ব্যালেন্স আপডেট
+                userBalanceEl.textContent = `৳ ${userCurrentBalance.toFixed(2)}`;
+
+                // টিকিট ডেটা সেভ করুন
+                const newTicketRef = push(ref(database, LOTTERY_TICKETS_PATH));
+                await set(newTicketRef, {
+                    ticketId: newTicketRef.key,
+                    lotteryId: currentLottery.lotteryId,
+                    userId: userId,
+                    userName: userName,
+                    ticketNumber: ticketNumber,
+                    price: TICKET_PRICE,
+                    purchaseTime: Date.now(),
+                    status: 'pending' // ড্র না হওয়া পর্যন্ত pending থাকবে
+                });
+
+                // লটারির পরিসংখ্যান আপডেট করুন (ক্লাউড ফাংশন দিয়েও করা যেতে পারে)
+                const currentLotteryRef = ref(database, LOTTERY_INFO_PATH);
+                await update(currentLotteryRef, {
+                    participantsCount: (currentLottery.participantsCount || 0) + 1,
+                    totalCollection: (currentLottery.totalCollection || 0) + TICKET_PRICE
+                });
+
+
+                showBuyTicketMessage('টিকিট সফলভাবে কেনা হয়েছে!', 'success');
+                ticketNumberDisplayEl.value = generateTicketNumber(); // নতুন টিকিট নম্বর জেনারেট করুন
+                loadUserTicketsHistory(); // টিকিট হিস্টরি রিফ্রেশ করুন
+
+            } catch (error) {
+                console.error("টিকিট কিনতে সমস্যা:", error);
+                showBuyTicketMessage('টিকিট কিনতে সমস্যা হয়েছে: ' + error.message, 'error');
+                // ব্যালেন্স ফিরিয়ে দিতে হতে পারে যদি ফায়ারবেস আপডেটে সমস্যা হয়, কিন্তু ক্লাউড ফাংশন থাকলে এটা আরও সুরক্ষিত হবে
+            } finally {
+                buyTicketBtn.disabled = userCurrentBalance < TICKET_PRICE; // ব্যালেন্সের উপর ভিত্তি করে বাটন ডিসেবল/এনেবল করুন
+                refreshTicketBtn.disabled = false;
+                buyTicketBtn.textContent = 'টিকিট কিনুন';
+            }
+        });
+
+
+        // --- প্রাথমিক
